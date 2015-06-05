@@ -34,7 +34,7 @@ extern person** MyArrayOfPointersToPeople;				// Pointer to MyArrayOfPointersToP
 
 
 //// --- Pointers to external arrays --- ////
-double** BirthArray;									// This is a pointer to an array!! i.e pointer to pointer :)
+double** BirthArray;									// This  is a pointer to an array!! i.e pointer to pointer :)
 double** DeathArray_Women;	
 double** DeathArray_Men;
 double** HIVArray_Women;
@@ -49,7 +49,7 @@ vector <float> HIVReservoir(0);
 void loadBirthArray(){									// Let's read in the fertility array 
 	E(cout << "Lets load the fertility array. " << endl;)
 
-	ifstream myfile("fertility.csv");				
+	ifstream myfile("/Users/Mikaela/Documents/HIVModel/HIVModel/fertility.csv");
    
 	BirthArray = new double *[301];
 		for (int row = 0; row<301; row++){				// This loop will read in every number to the right place
@@ -65,13 +65,14 @@ void loadBirthArray(){									// Let's read in the fertility array
 				convertor >>  BirthArray[row][col];
 			}
 		}
+
 	E(cout << "Fertility array has been read in successfully! " << endl;)
 }
 	
 void loadDeathArray_Women(){							// Let's read in the death array for women
 	E(cout << "Lets load the death array for women. " << endl;)
 
-	ifstream myfile1("mortality_array_women.csv");	
+	ifstream myfile1("/Users/Mikaela/Documents/HIVModel/HIVModel/mortality_array_women.csv");
    
 	DeathArray_Women = new double *[301];
 		for (int row = 0; row<301; row++){				// This loop will read in every number to the right place
@@ -93,7 +94,7 @@ void loadDeathArray_Women(){							// Let's read in the death array for women
 void loadDeathArray_Men(){								// Let's read in the death array for men
 	E(cout << "Lets load the death array for men. " << endl;)
 
-	ifstream myfile2("mortality_array_men.csv");				
+	ifstream myfile2("/Users/Mikaela/Documents/HIVModel/HIVModel/mortality_array_men.csv");
    
 	DeathArray_Men = new double *[301];
 		for (int row = 0; row<301; row++){				// This loop will read in every number to the right place
@@ -115,7 +116,7 @@ void loadDeathArray_Men(){								// Let's read in the death array for men
 void loadHIVArray_Women(){
 	E(cout << "Lets load the HIV array for women.  " << endl;)
 		
-	ifstream myfile3("HIV_incidence_women.csv");			// Let's read in the HIV array for women (incidence)
+	ifstream myfile3("/Users/Mikaela/Documents/HIVModel/HIVModel/HIV_incidence_women.csv");			// Let's read in the HIV array for women (incidence)
    
 	HIVArray_Women = new double *[201];
 		for (int row = 0; row<201; row++){					// This loop will read in every number to the right place
@@ -137,13 +138,14 @@ void loadHIVArray_Women(){
 void loadHIVArray_Men(){
 	E(cout << "Lets load the HIV array for men.  " << endl;)
 		
-	ifstream myfile4("HIV_incidence_men.csv");				// Let's read in the HIV array for men (incidence)
+	ifstream myfile4("/Users/Mikaela/Documents/HIVModel/HIVModel/HIV_incidence_men.csv");				// Let's read in the HIV array for men (incidence)
    
 	HIVArray_Men = new double *[201];
 		for (int row = 0; row<201; row++){					// This loop will read in every number to the right place
 			string line;
 			getline(myfile4, line);
 			stringstream iss(line);
+
 
 			HIVArray_Men[row]=new double[121];
 			for (int col = 0; col<121; col++){
@@ -244,7 +246,7 @@ void person::GetDateOfBaby(){								// This method already calculates the child
 		//// --- Lets first see how many children I will have --- ////
 		double r_nr=RandomMinMax(0,100)*0.01;				// To get a random number to later assign whether a woman gets min or max nr of children for time period
 		int index=DoB-1901+15;								// index for large arrays, related to year the patient will be 15 and ready for birth
-		int NrChildren;
+		int NrChildren = 0;
 
 		double NrChildrenArray[3][200] = {					// Min first, second Max, third proportion with min and max children
 			{7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4},
