@@ -398,7 +398,8 @@ void person::GetMyDateOfHIVInfection(){
 	E(cout << "Lets see if this person will get HIV!" << endl;)
 
 	if(DoB>=1900){											// Only people born from 1900 can ever experience HIV in their life
-	
+
+        
 		//// --- Lets see if person gets infected with HIV and when --- ////
 		// First lets see if there is an HIV date in the reservoir that is appropriate
 		if (HIVReservoir.size()>0) {
@@ -409,7 +410,7 @@ void person::GetMyDateOfHIVInfection(){
 				if (HIVReservoir.at(a)<DateOfDeath && HIVReservoir.at(a)>*p_GT){
 					HIV=HIVReservoir.at(a);
 					HIVReservoir.erase(HIVReservoir.begin()+a);
-					E(cout << "We goit HIV from the reservoir: " << HIV << " Reservoir size: " << HIVReservoir.size() << endl;
+					E(cout << "We got HIV from the reservoir: " << HIV << " Reservoir size: " << HIVReservoir.size() << endl;
 					cout << "1. A: " << a << endl;)
 				}
 							
@@ -421,13 +422,13 @@ void person::GetMyDateOfHIVInfection(){
 		}
 
 
-		// Secondly, if no HIV dtae in reservoir fits, lets see if and when HIV infection ocurrs
+		// Secondly, if no HIV date in reservoir fits, lets see if and when HIV infection ocurrs
 		if(HIV==-999){
 			int i=(DoB-1900);										// To find corresponding year of birth from mortality array
 			int j=0;												// This will be matched to probability taken from random number generator
 			float TestHIVDate=0;
 			double YearFraction=(RandomMinMax(1,12))/12.1;			// This gets month of birth as a fraction of a year
-			double	h = ((double)rand() / (RAND_MAX));				// Get a random number between 0 and 1.  NB/ THIS SHOULD HAVE A PRECISION OF 15 decimals which hsould be enough but lets be careful!!
+			double	h = ((double)rand() / (RAND_MAX));				// Get a random number between 0 and 1.  NB/ THIS SHOULD HAVE A PRECISION OF 15 decimals which should be enough but lets be careful!!
 	
 			if (Sex==1){
 				if (h>HIVArray_Men[i][120]){HIV=-988;}				// In case they do NOT get HIV ever
@@ -435,7 +436,7 @@ void person::GetMyDateOfHIVInfection(){
 					while(h>HIVArray_Men[i][j] && j<121){j++;}
 						TestHIVDate=(DoB+j)+YearFraction;
 						if (TestHIVDate<DateOfDeath && TestHIVDate>=1975){HIV=TestHIVDate;}
-						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {HIVReservoir.push_back(TestHIVDate);HIV=-977;}
+						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {/*HIVReservoir.push_back(TestHIVDate);*/HIV=-977;}
 						if (TestHIVDate<1975) {HIV=-989;}
 				}
 			}
@@ -446,7 +447,7 @@ void person::GetMyDateOfHIVInfection(){
 					while(h>HIVArray_Women[i][j] && j<121){j++;}
 						TestHIVDate=(DoB+j)+YearFraction;
 						if (TestHIVDate<DateOfDeath && TestHIVDate>=1975){HIV=TestHIVDate;}
-						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {HIVReservoir.push_back(TestHIVDate);HIV=-977;}
+						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {/*HIVReservoir.push_back(TestHIVDate);*/HIV=-977;}
 						if (TestHIVDate<1975) {HIV=-989;}
 				}
 			}
@@ -467,11 +468,11 @@ void person::GetMyDateOfHIVInfection(){
 
 
 	//// --- Some warning code - just in case ... --- ////
-	if (HIV>-977 && DoB>1900){
+	E(if (HIV>-977 && DoB>1900){
 		cout << endl <<  "This DIDNT WORK!! WARNING!! "<< endl;
 		cout << "HIV: " << HIV << " (Alive: " << Alive << " and Date of Death: " << DateOfDeath << ")" << endl;
 		cout << "Size reservoir: " << HIVReservoir.size() << endl << endl;
-	}
+	})
 		
 	E(cout << "We have finished checking if this person will get HIV in their lfe time, the person's future HIV status is " << HIV << endl;)
 
