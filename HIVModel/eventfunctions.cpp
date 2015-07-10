@@ -36,21 +36,6 @@ float CD4_startarray[2][4][3]={												// Array for proportion with specific
 	{{0.57905, 0.83195, 1},		{0.53669, 0.79935, 1},		{0.49260, 0.76275, 1},		{0.42467, 0.70094, 1}},
 	{{0.62750, 0.84933, 1},		{0.58635, 0.81863, 1},		{0.54277, 0.78372, 1},		{0.47411, 0.72378, 1}}
 };
-		
-float ARTDeath_event[2][4][7]={												// Array to see if this event will be either ART start or death will orcurr in this CD4 cat - see Excel for calculation
-	{{0.048, 0.066, 0.088, 0.100, 0.145, 0.089, 1},		{0.052, 0.072, 0.092, 0.105, 0.152, 0.098, 1},		{0.056, 0.079, 0.097, 0.111, 0.160, 0.108, 1},		{0.065, 0.095, 0.109, 0.124, 0.177, 0.130, 1}},
-	{{0.052, 0.072, 0.095, 0.108, 0.156, 0.096, 1},		{0.056, 0.079, 0.100, 0.113, 0.164, 0.106, 1},		{0.061, 0.086, 0.106, 0.120, 0.172, 0.118, 1},		{0.072, 0.104, 0.119, 0.134, 0.191, 0.142, 1}}
-};
-	
-float ART_start[2][4][7]={													// If number is smaller than that in array then patient starts ART if its bigger they will die
-	{{0.678, 0.608, 0.773, 0.773, 0.778, 0.556, 0.042},		{0.627, 0.553, 0.730, 0.731, 0.736, 0.499, 0.034},		{0.576, 0.501, 0.687, 0.687, 0.693, 0.447, 0.027},		{0.487, 0.421, 0.605, 0.606, 0.612, 0.361, 0.019}},								
-	{{0.670, 0.599, 0.766, 0.766, 0.771, 0.546, 0.040},		{0.618, 0.543, 0.723, 0.723, 0.729, 0.490, 0.032},		{0.567, 0.491, 0.679, 0.679, 0.685, 0.437, 0.026},		{0.478, 0.403, 0.596, 0.596, 0.603, 0.352, 0.019}}
-};
-
-float CD4_rate_change[2][4][7]={											// Time to progression to next CD4 stage
-	{{4.96, 2.96, 2.91, 1.82, 1.68, 1.11, 1.18},	{4.94, 2.94, 2.89, 1.90, 1.67, 1.09, 0.94},		{4.92, 2.91, 2.88, 1.89, 1.65, 1.08, 0.76},		{4.87, 2.86, 2.84, 1.86, 1.61, 1.05, 0.53}},
-	{{5.35, 3.18, 3.14, 2.06, 1.81, 1.19, 1.14},	{5.33, 3.16, 3.12, 2.05, 1.79, 1.17, 0.91},		{5.30, 3.13, 3.10, 2.03, 1.77, 1.16, 0.74},		{5.24, 3.07, 3.05, 2.00, 1.72, 1.13, 0.51}}
-};
 
 float CD4_rates[2][6]={
     {0.19835, 0.32913, 0.33628, 0.50936, 0.57271, 0.86702},
@@ -70,8 +55,6 @@ float Death_CD4_rates[2][4][7]={
         {0.00740, 0.02101, 0.01690, 0.02952, 0.04980, 0.08620, 1.94813},
     }
 };
-
-
 
 
 float ART_CD4_rates[2][4][7]={
@@ -197,29 +180,20 @@ void EventMyHIVInfection(person *MyPointerToPerson){
         double ART_test = 0;
         double art = ((double)rand() / (RAND_MAX));
         ART_test = (-1/FindART_CD4_rate) * log(art);
-        //cout <<  ART_test << endl;
         
         
         // Lets see when CD4 count progression would start
         double CD4_test = 0;
         double cd4 = ((double)rand() / (RAND_MAX));
         CD4_test = (-1/FindCD4_rate) * log(cd4);
-        //cout <<  CD4_test << endl;
         
         
         // Lets see when death would happen
         double death_test = 0;
         double dd = ((double)rand() / (RAND_MAX));
         death_test = (-1/FindDeath_CD4_rate) * log(dd);
-        //cout <<  death_test << endl;
         
-        
-        //cout << "Sex: " << MyPointerToPerson->Sex << " Age: " << MyPointerToPerson->Age << " CD4: " << MyPointerToPerson->CD4_cat << endl;
-//        cout << "ART rate: " << ART_test << endl;
-//        cout << "CD4 rate: " << CD4_test << endl;
-//        cout << "Death rate: " << death_test << endl;
-        
-        
+    
         //Before the introduction of ART
         if (*p_GT<2011){
             
@@ -288,6 +262,7 @@ void EventCD4change(person *MyPointerToPerson){
         MyPointerToPerson->CD4_cat=MyPointerToPerson->CD4_cat+1;                // Update CD4 count
         
         
+        //// --- When CD4 count hits the lowest possible value --- ////
         if (MyPointerToPerson->CD4_cat==6){
             
             double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
@@ -314,7 +289,7 @@ void EventCD4change(person *MyPointerToPerson){
         };
 
     
-
+        //// --- In case CD4 count is higher than minimum possible category --- ///
         if (MyPointerToPerson->CD4_cat<6){
         
             //// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
@@ -327,27 +302,18 @@ void EventCD4change(person *MyPointerToPerson){
             double ART_test = 0;
             double art = ((double)rand() / (RAND_MAX));
             ART_test = (-1/FindART_CD4_rate) * log(art);
-            //cout <<  ART_test << endl;
-            
+  
             
             // Lets see when CD4 count progression would start
             double CD4_test = 0;
             double cd4 = ((double)rand() / (RAND_MAX));
             CD4_test = (-1/FindCD4_rate) * log(cd4);
-            //cout <<  CD4_test << endl;
             
             
             // Lets see when death would happen
             double death_test = 0;
             double dd = ((double)rand() / (RAND_MAX));
             death_test = (-1/FindDeath_CD4_rate) * log(dd);
-            //cout <<  death_test << endl;
-            
-            
-            //cout << "Sex: " << MyPointerToPerson->Sex << " Age: " << MyPointerToPerson->Age << " CD4: " << MyPointerToPerson->CD4_cat << endl;
-            //        cout << "ART rate: " << ART_test << endl;
-            //        cout << "CD4 rate: " << CD4_test << endl;
-            //        cout << "Death rate: " << death_test << endl;
             
             
             //Before the introduction of ART
