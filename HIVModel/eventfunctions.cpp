@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctime>
+#include <math.h>                                                          // For 'log'
 #include "eventfunctions.h"
 #include "event.h"															// Need to add these to be able to	
 #include "eventQ.h"															// [...]run Global Time and Recurrent events pointers
@@ -49,6 +50,42 @@ float ART_start[2][4][7]={													// If number is smaller than that in arra
 float CD4_rate_change[2][4][7]={											// Time to progression to next CD4 stage
 	{{4.96, 2.96, 2.91, 1.82, 1.68, 1.11, 1.18},	{4.94, 2.94, 2.89, 1.90, 1.67, 1.09, 0.94},		{4.92, 2.91, 2.88, 1.89, 1.65, 1.08, 0.76},		{4.87, 2.86, 2.84, 1.86, 1.61, 1.05, 0.53}},
 	{{5.35, 3.18, 3.14, 2.06, 1.81, 1.19, 1.14},	{5.33, 3.16, 3.12, 2.05, 1.79, 1.17, 0.91},		{5.30, 3.13, 3.10, 2.03, 1.77, 1.16, 0.74},		{5.24, 3.07, 3.05, 2.00, 1.72, 1.13, 0.51}}
+};
+
+float CD4_rates[2][6]={
+    {0.19835, 0.32913, 0.33628, 0.50936, 0.57271, 0.86702},
+    {0.18356, 0.30458, 0.31120, 0.47137, 0.52999, 0.80236},
+};
+
+float Death_CD4_rates[2][4][7]={
+    {   {0.00321, 0.00912, 0.00733, 0.01281, 0.02161, 0.03741, 0.84544},
+        {0.00403, 0.01145, 0.00921, 0.01608, 0.02713, 0.04696, 1.06123},
+        {0.00497, 0.01412, 0.01136, 0.01984, 0.03347, 0.05794, 1.30933},
+        {0.00712, 0.02022, 0.01626, 0.02841, 0.04792, 0.08296, 1.87488},
+    },
+    
+    {   {0.00334, 0.00948, 0.00762, 0.01331, 0.02245, 0.03887, 0.87847},
+        {0.00419, 0.01189, 0.00957, 0.01671, 0.02819, 0.04879, 1.10269},
+        {0.00517, 0.01467, 0.01180, 0.02061, 0.03478, 0.06020, 1.36048},
+        {0.00740, 0.02101, 0.01690, 0.02952, 0.04980, 0.08620, 1.94813},
+    }
+};
+
+
+
+
+float ART_CD4_rates[2][4][7]={
+    {   {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+        {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+        {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+        {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+    },
+    
+    {   {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+        {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+        {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+        {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
+    }
 };
 
 
@@ -150,54 +187,88 @@ void EventMyHIVInfection(person *MyPointerToPerson){
 		MyPointerToPerson->CD4_cat_start=0+j;									// CD4 count cat at start (to keep in records)
 
 	
-		//// --- Let's see if I will die or start ART in this CD4 stage ---- ////
-		float e = ((double) rand() / (RAND_MAX));
-		float ee = ((double) rand() / (RAND_MAX));
+		//// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
+        double FindART_CD4_rate = ART_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
+        double FindCD4_rate = CD4_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
+        double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
+        
+        
+        // Lets see when ART would start
+        double ART_test = 0;
+        double art = ((double)rand() / (RAND_MAX));
+        ART_test = (-1/FindART_CD4_rate) * log(art);
+        //cout <<  ART_test << endl;
+        
+        
+        // Lets see when CD4 count progression would start
+        double CD4_test = 0;
+        double cd4 = ((double)rand() / (RAND_MAX));
+        CD4_test = (-1/FindCD4_rate) * log(cd4);
+        //cout <<  CD4_test << endl;
+        
+        
+        // Lets see when death would happen
+        double death_test = 0;
+        double dd = ((double)rand() / (RAND_MAX));
+        death_test = (-1/FindDeath_CD4_rate) * log(dd);
+        //cout <<  death_test << endl;
+        
+        
+        //cout << "Sex: " << MyPointerToPerson->Sex << " Age: " << MyPointerToPerson->Age << " CD4: " << MyPointerToPerson->CD4_cat << endl;
+//        cout << "ART rate: " << ART_test << endl;
+//        cout << "CD4 rate: " << CD4_test << endl;
+//        cout << "Death rate: " << death_test << endl;
+        
+        
+        //Before the introduction of ART
+        if (*p_GT<2011){
+            
+            if (CD4_test<death_test){
+                
+                //cout << "We are scheduling a CD4 progression " << endl;
+                
+                event * CD4change = new event;
+                Events.push_back(CD4change);
+                CD4change->time = *p_GT+CD4_test;
+                CD4change->p_fun = &EventCD4change;
+                CD4change->person_ID = MyPointerToPerson;
+                p_PQ->push(CD4change);
+                
+            }
+            
+            if (death_test<=CD4_test){
+                
+                //cout << "We are scheduling an HIV death " << endl;
+                
+                double death_test_date = *p_GT +death_test;                     // Get the actual date, not just time until death
+                
+                if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
+                
+                    MyPointerToPerson->DateOfDeath=death_test_date;
+                    
+                    event * DeathEvent = new event;								// In that case we need to add the new death date to the EventQ
+                    Events.push_back(DeathEvent);
+                    DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                    DeathEvent->p_fun = &EventMyDeathDate;
+                    DeathEvent->person_ID = MyPointerToPerson;
+                    p_PQ->push(DeathEvent);
+                }
+                
+            }
+            
+        }
+        
+        // After the introduction of ART
+        
+      // TO INSERT!!!
+        
+     
 
-		if (e<=ARTDeath_event[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]){
-		
-			if (ee<=ART_start[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]){
-				MyPointerToPerson->ART=1;
-			}
-		
-			else if (ee>ART_start[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]) {
-			
-				float HIVdeath=0;
-				HIVdeath=MyPointerToPerson->HIV+CD4_rate_change[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
-
-				if (HIVdeath<MyPointerToPerson->DateOfDeath){					// If HIV death is before natural death we need to bring death forward
-					MyPointerToPerson->DateOfDeath=HIVdeath;						
-					
-					if (MyPointerToPerson->DateOfDeath<2011){
-					event * DeathEvent = new event;								// In that case we need to add the new death date to the EventQ
-					Events.push_back(DeathEvent);
-					DeathEvent->time = MyPointerToPerson->DateOfDeath;											
-					DeathEvent->p_fun = &EventMyDeathDate;
-					DeathEvent->person_ID = MyPointerToPerson;
-					p_PQ->push(DeathEvent);
-					}
-				}
-			}
-		}
-
-
-		//// --- If a patient doesn't die or start ART we need to make the next CD4 count progression!!!
-		else if (e>ARTDeath_event[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]){
-
-			float TestNextCD4Change=-999;
-			TestNextCD4Change=MyPointerToPerson->HIV+CD4_rate_change[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
-	
-			event * CD4change = new event;										// Lets feed next CD4 count change into into the eventQ									
-			Events.push_back(CD4change);
-			CD4change->time = TestNextCD4Change;													
-			CD4change->p_fun = &EventCD4change;
-			CD4change->person_ID = MyPointerToPerson;
-			p_PQ->push(CD4change);
-		}
-	}
+    }
 
 	E(cout << "Somebody has just been infected with HIV!" << endl;)				// Error message - can be switched on/off
 }
+
 
 
 void EventCD4change(person *MyPointerToPerson){
@@ -206,62 +277,120 @@ void EventCD4change(person *MyPointerToPerson){
 
 	if(MyPointerToPerson->Alive == 1) {											// Add any additional things to progression of CD4 count
 	
-		MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get correct parameter below
-
-
-		//// --- Let's get the right index for all relevant arrays used here ---- ////
-		MyPointerToPerson->CD4_cat=MyPointerToPerson->CD4_cat+1;
-		double	h = ((double)rand() / (RAND_MAX));								// Gets a random number between 0 and 1.
-		int i=0;
-		int j=0;
-		int a=25;
-		while (MyPointerToPerson->Age>=a && a<46){a=a+10; i++;};				// To get the right age-specific row in the above sex-specific arraysfloat e = ((double) rand() / (RAND_MAX));
-	
-	
-		//// --- Let's see if I will die or start ART in this CD4 stage ---- ////
-		float e = ((double) rand() / (RAND_MAX));
-		float ee = ((double) rand() / (RAND_MAX));
-
-		if (e<=ARTDeath_event[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]){
 		
-			if (ee<=ART_start[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]){
-				MyPointerToPerson->ART=1;
-			}
-		
-			else if (ee>ART_start[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]) {
-			
-				float HIVdeath=0;
-				HIVdeath=*p_GT+CD4_rate_change[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
+        
+        //// --- Let's get the right index for all relevant arrays used here and update important info ---- ////
+        int i=0;
+        int a=25;
+        
+        while (MyPointerToPerson->Age>=a && a<46){a=a+10; i++;};				// To get the right age-specific row in the above sex-specific arrays
+        MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get correct parameter below
+        MyPointerToPerson->CD4_cat=MyPointerToPerson->CD4_cat+1;                // Update CD4 count
+        
+        
+        if (MyPointerToPerson->CD4_cat==6){
+            
+            double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
+            
+            // Lets see when death would happen
+            double death_test = 0;
+            double dd = ((double)rand() / (RAND_MAX));
+            death_test = (-1/FindDeath_CD4_rate) * log(dd);
+            //cout <<  death_test << endl;
+            
+            double death_test_date = *p_GT +death_test;                      // Get the actual date, not just time until death
+            
+            if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
+                
+                MyPointerToPerson->DateOfDeath=death_test_date;
+                
+                event * DeathEvent = new event;								// In that case we need to add the new death date to the EventQ
+                Events.push_back(DeathEvent);
+                DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                DeathEvent->p_fun = &EventMyDeathDate;
+                DeathEvent->person_ID = MyPointerToPerson;
+                p_PQ->push(DeathEvent);
+            };
+        };
 
-				if (HIVdeath<MyPointerToPerson->DateOfDeath){					// If HIV death is before natural death we need to bring death forward
-					MyPointerToPerson->DateOfDeath=HIVdeath;						
-																		
-					if (MyPointerToPerson->DateOfDeath<EndYear){
-						event * DeathEvent = new event;							// In that case we need to add the new death date to the EventQ		
-						Events.push_back(DeathEvent);
-						DeathEvent->time = MyPointerToPerson->DateOfDeath;													
-						DeathEvent->p_fun = &EventMyDeathDate;
-						DeathEvent->person_ID = MyPointerToPerson;
-						p_PQ->push(DeathEvent);
-					}
-				}
-			}
-		}	
+    
 
+        if (MyPointerToPerson->CD4_cat<6){
+        
+            //// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
+            double FindART_CD4_rate = ART_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
+            double FindCD4_rate = CD4_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
+            double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
+            
+            
+            // Lets see when ART would start
+            double ART_test = 0;
+            double art = ((double)rand() / (RAND_MAX));
+            ART_test = (-1/FindART_CD4_rate) * log(art);
+            //cout <<  ART_test << endl;
+            
+            
+            // Lets see when CD4 count progression would start
+            double CD4_test = 0;
+            double cd4 = ((double)rand() / (RAND_MAX));
+            CD4_test = (-1/FindCD4_rate) * log(cd4);
+            //cout <<  CD4_test << endl;
+            
+            
+            // Lets see when death would happen
+            double death_test = 0;
+            double dd = ((double)rand() / (RAND_MAX));
+            death_test = (-1/FindDeath_CD4_rate) * log(dd);
+            //cout <<  death_test << endl;
+            
+            
+            //cout << "Sex: " << MyPointerToPerson->Sex << " Age: " << MyPointerToPerson->Age << " CD4: " << MyPointerToPerson->CD4_cat << endl;
+            //        cout << "ART rate: " << ART_test << endl;
+            //        cout << "CD4 rate: " << CD4_test << endl;
+            //        cout << "Death rate: " << death_test << endl;
+            
+            
+            //Before the introduction of ART
+            if (*p_GT<2011){
+                
+                if (CD4_test<death_test){
+                    //cout << "We are scheduling a CD4 progression " << endl;
+                    event * CD4change = new event;
+                    Events.push_back(CD4change);
+                    CD4change->time = *p_GT+CD4_test;
+                    CD4change->p_fun = &EventCD4change;
+                    CD4change->person_ID = MyPointerToPerson;
+                    p_PQ->push(CD4change);
+                    
+                }
+                
+                if (death_test<=CD4_test){
+                    
+                    //cout << "We are scheduling an HIV death " << endl;
+                    
+                    double death_test_date = *p_GT +death_test;                      // Get the actual date, not just time until death
+                    
+                    if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
+                        
+                        MyPointerToPerson->DateOfDeath=death_test_date;
+                        
+                        event * DeathEvent = new event;								// In that case we need to add the new death date to the EventQ
+                        Events.push_back(DeathEvent);
+                        DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                        DeathEvent->p_fun = &EventMyDeathDate;
+                        DeathEvent->person_ID = MyPointerToPerson;
+                        p_PQ->push(DeathEvent);
+                    }
+                    
+                }
+                
+            }
+        }
+        
+        // After the introduction of ART
+        
+        // TO INSERT!!!
 
-		//// --- If a patient doesn't die or start ART we need to make the next CD4 count progression!!!
-		else if (e>ARTDeath_event[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat]){
-
-			float TestNextCD4Change=-999;
-			TestNextCD4Change=*p_GT+CD4_rate_change[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
-					
-			event * CD4change = new event;										// Lets feed next CD4 count change into into the eventQ 								
-			Events.push_back(CD4change);
-			CD4change->time = TestNextCD4Change;													
-			CD4change->p_fun = &EventCD4change;
-			CD4change->person_ID = MyPointerToPerson;
-			p_PQ->push(CD4change);
-		}
 	}
 	
 	E(cout << "Somebody has just experiences a drop in CD4 count!" << endl;)	// Error message - can be switched on/off

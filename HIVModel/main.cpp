@@ -56,7 +56,7 @@ double StartYear=1950;														// Define Start Year if the model and set it
 int EndYear=2010;															// If endyear is more than 2010, some things will need to get changes, an error message below has been set up as reminder
 
 const long long int final_number_people=100000000;							// To determine the final size of the total population to be modeled
-int init_pop =59100;															// Initial population 1st Jan 1950 as 5910 (see Excel for calculation)
+int init_pop =59100;														// Initial population 1st Jan 1950 as 5910 (see Excel for calculation)
 int total_population=init_pop;												// Update total population for output and for next new entry
 
 priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to event queue so as to be able to push-in/pop-out new events that are ocurreing  as a result of 'primary' events in the queue, e.g. recurrent birthdays
