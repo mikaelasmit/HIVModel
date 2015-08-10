@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////
 
 
-#include <stdio.h>	 									// Include some essential libraries and files
+#include <stdio.h>										// Include some essential libraries and files
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -393,80 +393,80 @@ void person::GetMyDoBNewEntry(){							// --- Assign Age for New Entry ---
 };
 
 
-//// --- FUNCTIONS RELATED TO HIV --- ////
-void person::GetMyDateOfHIVInfection(){
-
-	E(cout << "Lets see if this person will get HIV!" << endl;)
-
-	if(DoB>=1900){											// Only people born from 1900 can ever experience HIV in their life
-        
-        int year = floor(*p_GT);
-        double months = floor(((1-(*p_GT-year+0.01))*12));
-        double fractionyear = 1-(*p_GT-year);
-  
-		// Let's see when people are getting infected with HVI
-		if(HIV==-999){
-			int i=(DoB-1900);										// To find corresponding year of birth from mortality array
-			int j=0;												// This will be matched to probability taken from random number generator
-			float TestHIVDate=0;
-            double YearFraction=-999;
-            if(months>=1){YearFraction=(RandomMinMax(0,months))/12.1;}			// This gets month of birth as a fraction of a year
-            if(months<1){YearFraction=0;}
-			double	h = ((double)rand() / (RAND_MAX));				// Get a random number between 0 and 1.  NB/ THIS SHOULD HAVE A PRECISION OF 15 decimals which should be enough but lets be careful!!
-	
-			if (Sex==1){
-				if (h>HIVArray_Men[i][120]){HIV=-988;}				// In case they do NOT get HIV ever
-				if (h<=HIVArray_Men[i][120]){						// In case they DO get HIV in their life
-					while(h>HIVArray_Men[i][j] && j<121){j++;}
-						TestHIVDate=(DoB+j)+YearFraction;
-						if (TestHIVDate<DateOfDeath && TestHIVDate>=1975){HIV=TestHIVDate;}
-						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {HIV=-977;}
-						if (TestHIVDate<1975) {HIV=-989;}
-				}
-			}
-
-			if (Sex==2){
-				if (h>HIVArray_Women[i][120]){HIV=-988;}			// In case they do NOT get HIV ever
-				if (h<=HIVArray_Women[i][120]){						// In case they DO get HIV in their life
-					while(h>HIVArray_Women[i][j] && j<121){j++;}
-						TestHIVDate=(DoB+j);
-						if (TestHIVDate<DateOfDeath && TestHIVDate>=1975){HIV=TestHIVDate;}
-						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {HIV=-977;}
-						if (TestHIVDate<1975) {HIV=-989;}
-				}
-			}
-            
-            // Error message:
-            if (months>12){cout << "Error 2: There is an error and HIV infection will ocurr in the wrong year: " << months << endl;}
-            if (YearFraction>fractionyear){cout << "Error 2: There is an error!" << YearFraction << " and fraction " << fractionyear<< endl;cout << "Global Time "<< *p_GT << " and months " << months << endl;}
-            if(YearFraction==-999){cout << "Error 3: Yearfraction hasn't been initialised" << months << endl;}
-		}
-        
-        
-
-		
-		//// --- Lets feed HIV infection into the eventQ --- ////
-		if (HIV>=*p_GT && HIV<EndYear){
-			int p=PersonID-1;
-			event * HIVEvent = new event;												
-			Events.push_back(HIVEvent);
-			HIVEvent->time = HIV;													
-			HIVEvent->p_fun = &EventMyHIVInfection;
-			HIVEvent->person_ID = MyArrayOfPointersToPeople[p];
-			p_PQ->push(HIVEvent);
-		}
-	}
-
-
-	//// --- Some warning code - just in case ... --- ////
-	E(if (HIV>-977 && DoB>1900){
-		cout << endl <<  "This DIDNT WORK!! WARNING!! "<< endl;
-		cout << "HIV: " << HIV << " (Alive: " << Alive << " and Date of Death: " << DateOfDeath << ")" << endl;
-		cout << "Size reservoir: " << HIVReservoir.size() << endl << endl;
-	})
-		
-	E(cout << "We have finished checking if this person will get HIV in their lfe time, the person's future HIV status is " << HIV << endl;)
-
-};
+////// --- FUNCTIONS RELATED TO HIV --- ////
+//void person::GetMyDateOfHIVInfection(){
+//
+//	E(cout << "Lets see if this person will get HIV!" << endl;)
+//
+//	if(DoB>=1900){											// Only people born from 1900 can ever experience HIV in their life
+//        
+//        int year = floor(*p_GT);
+//        double months = floor(((1-(*p_GT-year+0.01))*12));
+//        double fractionyear = 1-(*p_GT-year);
+//  
+//		// Let's see when people are getting infected with HVI
+//		if(HIV==-999){
+//			int i=(DoB-1900);										// To find corresponding year of birth from mortality array
+//			int j=0;												// This will be matched to probability taken from random number generator
+//			float TestHIVDate=0;
+//            double YearFraction=-999;
+//            if(months>=1){YearFraction=(RandomMinMax(0,months))/12.1;}			// This gets month of birth as a fraction of a year
+//            if(months<1){YearFraction=0;}
+//			double	h = ((double)rand() / (RAND_MAX));				// Get a random number between 0 and 1.  NB/ THIS SHOULD HAVE A PRECISION OF 15 decimals which should be enough but lets be careful!!
+//	
+//			if (Sex==1){
+//				if (h>HIVArray_Men[i][120]){HIV=-988;}				// In case they do NOT get HIV ever
+//				if (h<=HIVArray_Men[i][120]){						// In case they DO get HIV in their life
+//					while(h>HIVArray_Men[i][j] && j<121){j++;}
+//						TestHIVDate=(DoB+j)+YearFraction;
+//						if (TestHIVDate<DateOfDeath && TestHIVDate>=1975){HIV=TestHIVDate;}
+//						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {HIV=-977;}
+//						if (TestHIVDate<1975) {HIV=-989;}
+//				}
+//			}
+//
+//			if (Sex==2){
+//				if (h>HIVArray_Women[i][120]){HIV=-988;}			// In case they do NOT get HIV ever
+//				if (h<=HIVArray_Women[i][120]){						// In case they DO get HIV in their life
+//					while(h>HIVArray_Women[i][j] && j<121){j++;}
+//						TestHIVDate=(DoB+j);
+//						if (TestHIVDate<DateOfDeath && TestHIVDate>=1975){HIV=TestHIVDate;}
+//						if (TestHIVDate>=DateOfDeath && TestHIVDate>=1975) {HIV=-977;}
+//						if (TestHIVDate<1975) {HIV=-989;}
+//				}
+//			}
+//            
+//            // Error message:
+//            if (months>12){cout << "Error 2: There is an error and HIV infection will ocurr in the wrong year: " << months << endl;}
+//            if (YearFraction>fractionyear){cout << "Error 2: There is an error!" << YearFraction << " and fraction " << fractionyear<< endl;cout << "Global Time "<< *p_GT << " and months " << months << endl;}
+//            if(YearFraction==-999){cout << "Error 3: Yearfraction hasn't been initialised" << months << endl;}
+//		}
+//        
+//        
+//
+//		
+//		//// --- Lets feed HIV infection into the eventQ --- ////
+//		if (HIV>=*p_GT && HIV<EndYear){
+//			int p=PersonID-1;
+//			event * HIVEvent = new event;												
+//			Events.push_back(HIVEvent);
+//			HIVEvent->time = HIV;													
+//			HIVEvent->p_fun = &EventMyHIVInfection;
+//			HIVEvent->person_ID = MyArrayOfPointersToPeople[p];
+//			p_PQ->push(HIVEvent);
+//		}
+//	}
+//
+//
+//	//// --- Some warning code - just in case ... --- ////
+//	E(if (HIV>-977 && DoB>1900){
+//		cout << endl <<  "This DIDNT WORK!! WARNING!! "<< endl;
+//		cout << "HIV: " << HIV << " (Alive: " << Alive << " and Date of Death: " << DateOfDeath << ")" << endl;
+//		cout << "Size reservoir: " << HIVReservoir.size() << endl << endl;
+//	})
+//		
+//	E(cout << "We have finished checking if this person will get HIV in their lfe time, the person's future HIV status is " << HIV << endl;)
+//
+//};
 
  

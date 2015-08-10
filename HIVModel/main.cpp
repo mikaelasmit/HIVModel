@@ -113,7 +113,7 @@ cout << "Hello, Mikaela!" << endl << endl ;								// Check if model is running
 
 		if (MyArrayOfPointersToPeople[i]->Sex == 2 && MyArrayOfPointersToPeople[i]->Age<50 && MyArrayOfPointersToPeople[i]->AgeAtDeath>=15) {(MyArrayOfPointersToPeople[i])->GetDateOfBaby();}		// --- Assign Birth of all Children- ---
 
-		(MyArrayOfPointersToPeople[i])->GetMyDateOfHIVInfection();
+		//(MyArrayOfPointersToPeople[i])->GetMyDateOfHIVInfection();
 	}							
 	cout << "We got to section 2 - We finished crating a population" << endl;
 	
@@ -128,13 +128,20 @@ cout << "Hello, Mikaela!" << endl << endl ;								// Check if model is running
 	TellNewYear->time = StartYear;																
 	TellNewYear->p_fun = &EventTellNewYear;
 	iQ.push(TellNewYear);
+    
+    
+    event * SeedHIVInfections = new event;										// --- Seeding of new infections ---
+    Events.push_back(SeedHIVInfections);
+    TellNewYear->time = 1980;
+    TellNewYear->p_fun = &EventSeedHIVInfections;
+    iQ.push(SeedHIVInfections);
 
 	
 	//// --- GIVE OUTPUT OF QUEUE AS IT HAPPENS --- ////
 	cout << endl << endl << "The characteristics of the event queue:" << endl;
 	cout << "the first event will ocurr in " << iQ.top()->time << ".  " << endl;
 	cout << "the size of the event queue is " << iQ.size() << endl;
-	
+
 	while(iQ.top()->time< EndYear +1 /*|| !iQ.empty()*/){					// this loop throws up error because no recurrent birthday pushing gt over 5 yrs and iq.pop means gt cannot be updated after pop
 		GlobalTime=iQ.top()->time;											// careful with order of global time update - do not touch or touch and check!!		
 		iQ.top()-> p_fun(iQ.top()->person_ID);
