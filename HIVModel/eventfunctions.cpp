@@ -4,14 +4,14 @@
 //    These event are added to the EventQ.					   //
 /////////////////////////////////////////////////////////////////
 
-#include <stdio.h> 
+#include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <ctime>
 #include <math.h>                                                          // For 'log'
 #include "eventfunctions.h"
-#include "event.h"															// Need to add these to be able to	
+#include "event.h"															// Need to add these to be able to
 #include "eventQ.h"															// [...]run Global Time and Recurrent events pointers
 #include "person.h"
 #include "errorcoutmacro.h"
@@ -33,8 +33,8 @@ extern vector<event*> Events;
 //// --- Key parameters for HIV natural history, treatment and mortality --- ////
 // The following arrays are for [Sex][Age], where Sex: 0-Men & 1=Women and Age: 0=0-24, 1=25-34, 2=35-44, and 3= over 45
 float CD4_startarray[2][4][3]={												// Array for proportion with specific CD4 count ranges upon seroconversion (Men and women)
-	{{0.57905, 0.83195, 1},		{0.53669, 0.79935, 1},		{0.49260, 0.76275, 1},		{0.42467, 0.70094, 1}},
-	{{0.62750, 0.84933, 1},		{0.58635, 0.81863, 1},		{0.54277, 0.78372, 1},		{0.47411, 0.72378, 1}}
+    {{0.57905, 0.83195, 1},		{0.53669, 0.79935, 1},		{0.49260, 0.76275, 1},		{0.42467, 0.70094, 1}},
+    {{0.62750, 0.84933, 1},		{0.58635, 0.81863, 1},		{0.54277, 0.78372, 1},		{0.47411, 0.72378, 1}}
 };
 
 float CD4_rates[2][6]={
@@ -76,117 +76,132 @@ float ART_CD4_rates[2][4][7]={
 //// --- FUNCTIONS FOR EVENTS --- ////
 //////////////////////////////////////
 
-/// Seeding HIV infections as a test ////
-void EventSeedHIVInfections(person *MyPointerToPerson){
+
+//// HIV TEST CODE ////
+void EventSeedHIV(person *MyPointerToPerson){
     
-    MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);
     
-    int nrmen=0;
-//    
-//    for(int i=0; i<total_population; i++){                          // -- Count Number with sex and age specified
-//        MyPointerToPerson[i]->Age= (*p_GT - MyPointerToPerson[i]->DoB);
-//        if (MyArrayOfPointersToPeople[i])->Sex==1 && MyArrayOfPointersToPeople[i]->Age<24 && MyArrayOfPointersToPeople[i]>15 && if MyArrayOfPointersToPeople[i]==Alive){
-//            countmen15to24++;
-//        };
-//        
-       cout << "The year is: " << *p_GT << "There are " << nrmen << " men aged 15 to 24 in 1980" << endl;
+    // Lets coutn how many men there are in 1980
+    cout << "let's count how many men aged 15 to 24 we have.  " << endl;
+    
+    int nrofmenofagex=0;
+    
+    for(int i=0; i<total_population; i++){
+    
+        (MyArrayOfPointersToPeople[i])->Age= (*p_GT - (MyArrayOfPointersToPeople[i])->DoB);
+    
+        if ((MyArrayOfPointersToPeople[i])->Alive==1 && (MyArrayOfPointersToPeople[i])->Age<25 && (MyArrayOfPointersToPeople[i])->Age>=15 && (MyArrayOfPointersToPeople[i])->Sex==1){
+            
+            nrofmenofagex++;
+            
+        };
+    }
+    
+    // ERROR message in case not enough men of that age
+    if (nrofmenofagex<1000){
+    cout << "ERROR!!!There are " << nrofmenofagex << " men aged 15 to 24 in1980" << endl;
+    };
+    
+    // Lets give people HIV
+    
+
 }
 
 //// --- NEW YEAR FUNCTION --- ////
-void EventTellNewYear(person *MyPointerToPerson){				
-																		
-	cout << "A new year has started, it is now " << *p_GT << endl;				// This whole function to output every time a new year starts - to make sure the model is actually running
-	
-	// Lets get the pointer to the right year range
-	if (*p_GT<1955){*p_PY = 0; };
-	if (*p_GT >= 1955 && *p_GT<1960){*p_PY = 1; };
-	if (*p_GT >= 1960 && *p_GT<1965){*p_PY = 2; };
-	if (*p_GT >= 1965 && *p_GT<1970){*p_PY = 3; };
-	if (*p_GT >= 1970 && *p_GT<1975){*p_PY = 4; };
-	if (*p_GT >= 1975 && *p_GT<1980){*p_PY = 5; };
-	if (*p_GT >= 1980 && *p_GT<1985){*p_PY = 6; };
-	if (*p_GT >= 1985 && *p_GT<1990){*p_PY = 7; };
-	if (*p_GT >= 1990 && *p_GT<1995){*p_PY = 8; };
-	if (*p_GT >= 1995 && *p_GT<2000){*p_PY = 9; };
-	if (*p_GT >= 2000 && *p_GT<2005){*p_PY = 10;};
-	if (*p_GT >= 2005){*p_PY = 11; };
-	E(cout << "Let's check relevant things have been updated... *p_PY: " << *p_PY << " and Global Time: " << *p_GT << endl;)
-
-	// Schedule event for next year
-	event * RecurrentTellNewYear = new event;
-	Events.push_back(RecurrentTellNewYear);
-	RecurrentTellNewYear->time = *p_GT + 1;										
-	RecurrentTellNewYear->p_fun = &EventTellNewYear;
-	p_PQ->push(RecurrentTellNewYear);
-
-	E(cout << "We have finished telling you the new year and setting fertility variables for the year." << endl;)	// Error message - can be switched on/off
+void EventTellNewYear(person *MyPointerToPerson){
+    
+    cout << "A new year has started, it is now " << *p_GT << endl;				// This whole function to output every time a new year starts - to make sure the model is actually running
+    
+    // Lets get the pointer to the right year range
+    if (*p_GT<1955){*p_PY = 0; };
+    if (*p_GT >= 1955 && *p_GT<1960){*p_PY = 1; };
+    if (*p_GT >= 1960 && *p_GT<1965){*p_PY = 2; };
+    if (*p_GT >= 1965 && *p_GT<1970){*p_PY = 3; };
+    if (*p_GT >= 1970 && *p_GT<1975){*p_PY = 4; };
+    if (*p_GT >= 1975 && *p_GT<1980){*p_PY = 5; };
+    if (*p_GT >= 1980 && *p_GT<1985){*p_PY = 6; };
+    if (*p_GT >= 1985 && *p_GT<1990){*p_PY = 7; };
+    if (*p_GT >= 1990 && *p_GT<1995){*p_PY = 8; };
+    if (*p_GT >= 1995 && *p_GT<2000){*p_PY = 9; };
+    if (*p_GT >= 2000 && *p_GT<2005){*p_PY = 10;};
+    if (*p_GT >= 2005){*p_PY = 11; };
+    E(cout << "Let's check relevant things have been updated... *p_PY: " << *p_PY << " and Global Time: " << *p_GT << endl;)
+    
+    // Schedule event for next year
+    event * RecurrentTellNewYear = new event;
+    Events.push_back(RecurrentTellNewYear);
+    RecurrentTellNewYear->time = *p_GT + 1;
+    RecurrentTellNewYear->p_fun = &EventTellNewYear;
+    p_PQ->push(RecurrentTellNewYear);
+    
+    E(cout << "We have finished telling you the new year and setting fertility variables for the year." << endl;)	// Error message - can be switched on/off
 }
 
 
-//// --- DEATH EVENT --- ////	
+//// --- DEATH EVENT --- ////
 void EventMyDeathDate(person *MyPointerToPerson){
-
-	if (MyPointerToPerson->Alive==1){MyPointerToPerson->Alive=0;}
-	E(cout << "Person " << MyPointerToPerson->PersonID << " just died. Their life status now is: " << MyPointerToPerson->Alive << endl;)
+    
+    if (MyPointerToPerson->Alive==1){MyPointerToPerson->Alive=0;}
+    E(cout << "Person " << MyPointerToPerson->PersonID << " just died. Their life status now is: " << MyPointerToPerson->Alive << endl;)
 }
 
 
 //// --- BIRTH EVENT AND MAKING NEW PERSON --- ////
-void EventBirth(person *MyPointerToPerson){								
-		
-	E(cout << "A birth is about to happen and my life status: " << endl;)		// Error message - can be switched on/off
-
-	if(MyPointerToPerson->Alive == 1) {											// Only let woman give birth if she is still alive 
-		
-		total_population=total_population+1;									// Update total population for output and for next new entry
-		MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get age at birth for output
-		
-
-		// Creating a new person 
-		MyArrayOfPointersToPeople[total_population-1]=new person();
-		(MyArrayOfPointersToPeople[total_population-1])->PersonIDAssign(total_population-1);
-		(MyArrayOfPointersToPeople[total_population-1])->Alive=1;
-		(MyArrayOfPointersToPeople[total_population-1])->GenderDistribution();
-		(MyArrayOfPointersToPeople[total_population-1])->GetMyDoBNewEntry();
-		(MyArrayOfPointersToPeople[total_population-1])->GetDateOfDeath();
-		(MyArrayOfPointersToPeople[total_population-1])->GetDateOfBaby();
-		//(MyArrayOfPointersToPeople[total_population-1])->GetMyDateOfHIVInfection();
-
-	
-		// Link Mother and Child
-		(MyArrayOfPointersToPeople[total_population-1])->MotherID=MyPointerToPerson->PersonID;			// Give child their mothers ID
-		MyPointerToPerson->ChildIDVector.push_back((MyArrayOfPointersToPeople[total_population-1]));	// Give mothers their child's ID
-			
-		E(cout << "We have finished giving birth " << endl;)					// Error message - can be switched on/off
-	
-	}
+void EventBirth(person *MyPointerToPerson){
+    
+    E(cout << "A birth is about to happen and my life status: " << endl;)		// Error message - can be switched on/off
+    
+    if(MyPointerToPerson->Alive == 1) {											// Only let woman give birth if she is still alive
+        
+        total_population=total_population+1;									// Update total population for output and for next new entry
+        MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get age at birth for output
+        
+        
+        // Creating a new person
+        MyArrayOfPointersToPeople[total_population-1]=new person();
+        (MyArrayOfPointersToPeople[total_population-1])->PersonIDAssign(total_population-1);
+        (MyArrayOfPointersToPeople[total_population-1])->Alive=1;
+        (MyArrayOfPointersToPeople[total_population-1])->GenderDistribution();
+        (MyArrayOfPointersToPeople[total_population-1])->GetMyDoBNewEntry();
+        (MyArrayOfPointersToPeople[total_population-1])->GetDateOfDeath();
+        (MyArrayOfPointersToPeople[total_population-1])->GetDateOfBaby();
+        //(MyArrayOfPointersToPeople[total_population-1])->GetMyDateOfHIVInfection();
+        
+        
+        // Link Mother and Child
+        (MyArrayOfPointersToPeople[total_population-1])->MotherID=MyPointerToPerson->PersonID;			// Give child their mothers ID
+        MyPointerToPerson->ChildIDVector.push_back((MyArrayOfPointersToPeople[total_population-1]));	// Give mothers their child's ID
+        
+        E(cout << "We have finished giving birth " << endl;)					// Error message - can be switched on/off
+        
+    }
 }
 
 
-//// --- HIV EVENT --- ////
+////// --- HIV EVENT --- ////
 //void EventMyHIVInfection(person *MyPointerToPerson){
-//	
-//	E(cout << "Somebody is about to get infected with HIV: " << endl;)			// Error message - can be switched on/off
-//
-//	if(MyPointerToPerson->Alive == 1) {											// Only execute this is patient is still alove
-//	
-//		MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get correct parameter below
-//	
-//
-//		//// --- Get my CD4 count at start --- ////
-//		double	h = ((double)rand() / (RAND_MAX));								// Gets a random number between 0 and 1.
-//		int i=0;
-//		int j=0;
-//		int a=25;
-//	
-//		while (MyPointerToPerson->Age>=a && a<46){a=a+10; i++;};				// To get the right age-specific row in the above sex-specific arrays
-//		while (h>CD4_startarray[MyPointerToPerson->Sex-1][i][j] && j<3){j++;}	// To get the corresponding CD4 count for correct age and sex from random 'h' generated above
-//	
-//		MyPointerToPerson->CD4_cat=0+j;											// CD4 count cat (variable over time)
-//		MyPointerToPerson->CD4_cat_start=0+j;									// CD4 count cat at start (to keep in records)
-//
-//	
-//		//// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
+//    
+//    E(cout << "Somebody is about to get infected with HIV: " << endl;)			// Error message - can be switched on/off
+//    
+//    if(MyPointerToPerson->Alive == 1) {											// Only execute this is patient is still alove
+//        
+//        MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get correct parameter below
+//        
+//        
+//        //// --- Get my CD4 count at start --- ////
+//        double	h = ((double)rand() / (RAND_MAX));								// Gets a random number between 0 and 1.
+//        int i=0;
+//        int j=0;
+//        int a=25;
+//        
+//        while (MyPointerToPerson->Age>=a && a<46){a=a+10; i++;};				// To get the right age-specific row in the above sex-specific arrays
+//        while (h>CD4_startarray[MyPointerToPerson->Sex-1][i][j] && j<3){j++;}	// To get the corresponding CD4 count for correct age and sex from random 'h' generated above
+//        
+//        MyPointerToPerson->CD4_cat=0+j;											// CD4 count cat (variable over time)
+//        MyPointerToPerson->CD4_cat_start=0+j;									// CD4 count cat at start (to keep in records)
+//        
+//        
+//        //// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
 //        double FindART_CD4_rate = ART_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
 //        double FindCD4_rate = CD4_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
 //        double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
@@ -209,7 +224,7 @@ void EventBirth(person *MyPointerToPerson){
 //        double dd = ((double)rand() / (RAND_MAX));
 //        death_test = (-1/FindDeath_CD4_rate) * log(dd);
 //        
-//    
+//        
 //        //Before the introduction of ART
 //        if (*p_GT<2011){
 //            
@@ -233,7 +248,7 @@ void EventBirth(person *MyPointerToPerson){
 //                double death_test_date = *p_GT +death_test;                     // Get the actual date, not just time until death
 //                
 //                if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
-//                
+//                    
 //                    MyPointerToPerson->DateOfDeath=death_test_date;
 //                    
 //                    event * DeathEvent = new event;								// In that case we need to add the new death date to the EventQ
@@ -250,24 +265,24 @@ void EventBirth(person *MyPointerToPerson){
 //        
 //        // After the introduction of ART
 //        
-//      // TO INSERT!!!
+//        // TO INSERT!!!
 //        
-//     
-//
+//        
+//        
 //    }
-//
-//	E(cout << "Somebody has just been infected with HIV!" << endl;)				// Error message - can be switched on/off
+//    
+//    E(cout << "Somebody has just been infected with HIV!" << endl;)				// Error message - can be switched on/off
 //}
 //
 //
 //
 //void EventCD4change(person *MyPointerToPerson){
-//	
-//	E(cout << "Somebody is about to experience a drop in CD4 count: " << endl;)	// Error message - can be switched on/off
-//
-//	if(MyPointerToPerson->Alive == 1) {											// Add any additional things to progression of CD4 count
-//	
-//		
+//    
+//    E(cout << "Somebody is about to experience a drop in CD4 count: " << endl;)	// Error message - can be switched on/off
+//    
+//    if(MyPointerToPerson->Alive == 1) {											// Add any additional things to progression of CD4 count
+//        
+//        
 //        
 //        //// --- Let's get the right index for all relevant arrays used here and update important info ---- ////
 //        int i=0;
@@ -303,11 +318,11 @@ void EventBirth(person *MyPointerToPerson){
 //                p_PQ->push(DeathEvent);
 //            };
 //        };
-//
-//    
+//        
+//        
 //        //// --- In case CD4 count is higher than minimum possible category --- ///
 //        if (MyPointerToPerson->CD4_cat<6){
-//        
+//            
 //            //// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
 //            double FindART_CD4_rate = ART_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
 //            double FindCD4_rate = CD4_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
@@ -318,7 +333,7 @@ void EventBirth(person *MyPointerToPerson){
 //            double ART_test = 0;
 //            double art = ((double)rand() / (RAND_MAX));
 //            ART_test = (-1/FindART_CD4_rate) * log(art);
-//  
+//            
 //            
 //            // Lets see when CD4 count progression would start
 //            double CD4_test = 0;
@@ -372,16 +387,15 @@ void EventBirth(person *MyPointerToPerson){
 //        // After the introduction of ART
 //        
 //        // TO INSERT!!!
-//
-//	}
-//	
-//	E(cout << "Somebody has just experiences a drop in CD4 count!" << endl;)	// Error message - can be switched on/off
+//        
+//    }
+//    
+//    E(cout << "Somebody has just experiences a drop in CD4 count!" << endl;)	// Error message - can be switched on/off
 //}
-//	
-//
-//
-//
-//
+
+
+
+
 
 
 
