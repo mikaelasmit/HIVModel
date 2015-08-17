@@ -188,9 +188,11 @@ person::person()											// First 'person' class second constructor/variable a
     Alive=-999;												// Variable to update eventQ - global check to see if person is still alive
     
     HIV=-999;												// --- Variables related to HIV-infection ---
-    //CD4_cat_start=-999;
-    //CD4_cat=-999;											// Where 0=>500, 1=350-500, 2=250-350, 3=200-250, 4=100-200, 5=50-100, and 6=<50
-    //ART=-999;												// Where HIV and ART 0=No and 1=Yes
+    CD4_cat_start=-999;
+    CD4_cat=-999;											// Where 0=>500, 1=350-500, 2=250-350, 3=200-250, 4=100-200, 5=50-100, and 6=<50
+    ART=-999;												// Where HIV and ART 0=No and 1=Yes
+    DateOver500=-999;
+    DateOver200=-999;
 }
 
 

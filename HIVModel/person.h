@@ -45,9 +45,11 @@ public:
 	int AgeAtDeath;
 
 	double HIV;										// Variables related to HIV
-//	int CD4_cat_start;
-//	int CD4_cat;
-//	int ART;	
+	int CD4_cat_start;
+	int CD4_cat;
+	int ART;
+    double DateOver500;
+    double DateOver200;
 
 
 //// --- FUNCTIONS --- ////		

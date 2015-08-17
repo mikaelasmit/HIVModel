@@ -155,8 +155,7 @@ int main(){
     FILE* Project1;
     Project1 = fopen("/Users/Mikaela/Documents/MATLAB/HIV check/Project1.csv","w");
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d \n",
-        //fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d \n",
+        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -164,10 +163,12 @@ int main(){
                 MyArrayOfPointersToPeople[i]->MotherID,
                 MyArrayOfPointersToPeople[i]->DatesBirth.size(),
                 MyArrayOfPointersToPeople[i]->DateOfDeath,
-                MyArrayOfPointersToPeople[i]->AgeAtDeath
-                //MyArrayOfPointersToPeople[i]->HIV,
-                //MyArrayOfPointersToPeople[i]->CD4_cat,
-                //MyArrayOfPointersToPeople[i]->ART
+                MyArrayOfPointersToPeople[i]->AgeAtDeath,
+                MyArrayOfPointersToPeople[i]->HIV,
+                MyArrayOfPointersToPeople[i]->CD4_cat,
+                MyArrayOfPointersToPeople[i]->ART,
+                MyArrayOfPointersToPeople[i]->DateOver500,
+                MyArrayOfPointersToPeople[i]->DateOver200
                 
                 );}
     fclose(Project1);

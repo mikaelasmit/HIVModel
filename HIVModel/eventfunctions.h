@@ -20,7 +20,7 @@ void EventTellNewYear(person *MyPointerToPerson);			// Tell us when a new year s
 
 
 ////// --- HIV Events ---
-//void EventMyHIVInfection(person *MyPointerToPerson);       // Function executed once person gets infecte with HIV
-//void EventCD4change(person *MyPointerToPerson);			   // Function executed when CD4 count is due to change (go down)
+void EventMyHIVInfection(person *MyPointerToPerson);       // Function executed once person gets infecte with HIV
+void EventCD4change(person *MyPointerToPerson);			   // Function executed when CD4 count is due to change (go down)
 
 void EventSeedHIV(person *MyPointerToPerson);
