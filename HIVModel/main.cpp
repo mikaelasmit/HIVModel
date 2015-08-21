@@ -25,7 +25,7 @@
 
 using namespace std;   
 
-// TO FIX GENERAL
+// TO FIX GENERAL 
 // 1. Change population to vector instead of array - need to keep a long long int for count of population, and find way of dealing with array of pointers (too long)
 // 2. Remove all unecessary code - tidy up
 // 3. When person dies, remove all related events, do something about events that should no longer happen

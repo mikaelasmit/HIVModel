@@ -6,7 +6,7 @@
 
 #ifndef priorityQ_errormacro_h
 #define priorityQ_errormacro_h
-
+ 
 //// --- Macro header file --- ////
 
 //#define DEBUG_MODE2			// Comment this out to stop E(x) x cout statement

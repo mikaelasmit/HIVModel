@@ -4,7 +4,7 @@
 //    These event are added to the EventQ.					   //
 /////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
+#include <stdio.h> 
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -89,7 +89,7 @@ void EventTellNewYear(person *MyPointerToPerson){
 	if (*p_GT >= 1970 && *p_GT<1975){*p_PY = 4; };
 	if (*p_GT >= 1975 && *p_GT<1980){*p_PY = 5; };
 	if (*p_GT >= 1980 && *p_GT<1985){*p_PY = 6; };
-	if (*p_GT >= 1985 && *p_GT<1990){*p_PY = 7; };bfdhsbfjhdbshj
+	if (*p_GT >= 1985 && *p_GT<1990){*p_PY = 7; };
 	if (*p_GT >= 1990 && *p_GT<1995){*p_PY = 8; };
 	if (*p_GT >= 1995 && *p_GT<2000){*p_PY = 9; };
 	if (*p_GT >= 2000 && *p_GT<2005){*p_PY = 10;};
