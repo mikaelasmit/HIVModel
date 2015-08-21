@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
-#include <stdio.h> 
+#include <stdio.h>
 #include "person.h"										// Need to include person header as we make pointer to persons in below
 #ifndef event_h										
 #define event_h	

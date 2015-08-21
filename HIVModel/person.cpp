@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////
 
 
-#include <stdio.h>	 									// Include some essential libraries and files
+#include <stdio.h>										// Include some essential libraries and files
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>

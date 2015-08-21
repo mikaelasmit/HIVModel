@@ -6,7 +6,7 @@
 
 
 
-#include <stdio.h>	 						// Refers to C StandarD Input Output library - uses streams to operate with physical devices including keyboards
+#include <stdio.h>							// Refers to C StandarD Input Output library - uses streams to operate with physical devices including keyboards
 #include <queue>							// Needed for the priorityQ
 #ifndef eventQ_h							
 #define eventQ_h

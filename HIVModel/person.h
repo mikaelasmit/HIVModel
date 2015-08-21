@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////////////////////
 
 
-#ifndef person_h 									// If not defined then defines it  # are pre-compiler definitions
+#ifndef person_h									// If not defined then defines it  # are pre-compiler definitions
 #define person_h	
 #include <vector>
 
