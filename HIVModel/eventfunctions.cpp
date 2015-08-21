@@ -91,7 +91,7 @@ void EventSeedHIV(person *MyPointerToPerson){
     
         (MyArrayOfPointersToPeople[i])->Age= (*p_GT - (MyArrayOfPointersToPeople[i])->DoB);
     
-        if ((MyArrayOfPointersToPeople[i])->Alive==1 && (MyArrayOfPointersToPeople[i])->Age<25 && (MyArrayOfPointersToPeople[i])->Age>=15 && (MyArrayOfPointersToPeople[i])->Sex==2){
+        if ((MyArrayOfPointersToPeople[i])->Alive==1 && (MyArrayOfPointersToPeople[i])->Age<25 && (MyArrayOfPointersToPeople[i])->Age>=15 && (MyArrayOfPointersToPeople[i])->Sex==1){
             
             if (nrofpplwithHIV<1000){
                 (MyArrayOfPointersToPeople[i])->HIV=1980+0.001;
