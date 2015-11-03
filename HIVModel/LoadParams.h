@@ -10,18 +10,26 @@
 #ifndef ____LoadParams__
 #define ____LoadParams__
 
-#include <stdio.h>
-#include <vector>
 
-using namespace std;
-
-
-//// --- External Arrays --- ////
+//// --- External Large Arrays --- ////
 void loadBirthArray();								// functions to load arrays
 void loadDeathArray_Women();
 void loadDeathArray_Men();
 void loadHIVArray_Women();
 void loadHIVArray_Men();
+
+
+//// --- Shorter Parameter Arrays --- ////
+
+void loadCD4StartArray();
+void loadCD4ProgArray();
+void loadCD4DeathArray();
+void loadCD4ARTArray();
+
+
+
+
+
 
 
 

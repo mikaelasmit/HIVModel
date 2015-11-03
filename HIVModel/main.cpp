@@ -15,6 +15,7 @@
 #include "eventfunctions.h"
 #include "errorcoutmacro.h"
 #include "LoadParams.h"
+#include "CParamReader.hpp"
 
 #include <fstream>									// some important libraries for reading in the arrays
 #include <vector>
@@ -72,13 +73,23 @@ int main(){
     cout << "Hello, Mikaela!" << endl << endl ;								// Check if model is running
     
     
-    //// Load relevant parameters
+    //// Load parameters
     cout << "We got to section 1 - We are loading the arrays" << endl;
     loadBirthArray();
     loadDeathArray_Women();
     loadDeathArray_Men();
     loadHIVArray_Women();
     loadHIVArray_Men();
+    
+    loadCD4DeathArray();
+    loadCD4StartArray();
+    loadCD4ProgArray();
+    
+    
+    
+    cout << "We finished loading the arrays" << endl;
+    
+    
     
     
     //// Some notification code
@@ -144,7 +155,7 @@ int main(){
     
     //// --- Output the results in a csv file ---
     FILE* Project1;
-    Project1 = fopen("/Users/Mikaela/Documents/MATLAB/HIV check/Project1.csv","w");
+    Project1 = fopen("/Users/Mikaela/Documents/MATLAB/HIV check/Project2.csv","w");
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
         fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d \n",
                 MyArrayOfPointersToPeople[i]->PersonID,

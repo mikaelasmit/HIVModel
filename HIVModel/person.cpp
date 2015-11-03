@@ -8,21 +8,13 @@
 #include <stdio.h>	 									// Include some essential libraries and files
 #include <iostream>
 #include <stdlib.h>
-#include <time.h>
-#include <vector>
+#include <cmath>
 #include "person.h"
 #include "event.h"
 #include "eventfunctions.h"
 #include "errorcoutmacro.h"
 #include "eventQ.h"
 #include "LoadParams.h"
-
-#include <fstream>										// some important libraries for reading in the arrays
-#include <vector>
-#include <string>
-#include <sstream>
-#include <stdlib.h>
-#include <cmath>
 
 
 //// --- OUTSIDE INFORMATION --- ////

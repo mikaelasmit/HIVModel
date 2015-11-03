@@ -15,6 +15,8 @@
 #include "eventQ.h"															// [...]run Global Time and Recurrent events pointers
 #include "person.h"
 #include "errorcoutmacro.h"
+#include "CParamReader.hpp"
+#include "LoadParams.h"
 
 
 using namespace std;
@@ -29,19 +31,39 @@ extern person** MyArrayOfPointersToPeople;									// Pointer to MyArrayOfPointe
 extern int *p_PY;															// Pointer to show which year range we are on
 extern vector<event*> Events;
 
+extern double ***CD4_startarray;
+extern double  **CD4_prog_rates;
+extern double ***Death_CD4_rates;
+//extern double ***ART_CD4_rates;
 
 //// --- Key parameters for HIV natural history, treatment and mortality --- ////
 // The following arrays are for [Sex][Age], where Sex: 0-Men & 1=Women and Age: 0=0-24, 1=25-34, 2=35-44, and 3= over 45
-float CD4_startarray[2][4][3]={												// Array for proportion with specific CD4 count ranges upon seroconversion (Men and women)
-	{{0.57905, 0.83195, 1},		{0.53669, 0.79935, 1},		{0.49260, 0.76275, 1},		{0.42467, 0.70094, 1}},
-	{{0.62750, 0.84933, 1},		{0.58635, 0.81863, 1},		{0.54277, 0.78372, 1},		{0.47411, 0.72378, 1}}
+
+
+/*  float CD4_startarray[2][4][3]={												// Array for proportion with specific CD4 count ranges upon seroconversion (Men and women)
+  {
+     {0.57905, 0.83195, 1},
+     {0.53669, 0.79935, 1},
+     {0.49260, 0.76275, 1},
+     {0.42467, 0.70094, 1}
+  },
+  {
+     {0.62750, 0.84933, 1},
+     {0.58635, 0.81863, 1},
+     {0.54277, 0.78372, 1},
+     {0.47411, 0.72378, 1}
+  }
 };
+ */
+  
+/*
 
 float CD4_rates[2][6]={
     {0.19835, 0.32913, 0.33628, 0.50936, 0.57271, 0.86702},
     {0.18356, 0.30458, 0.31120, 0.47137, 0.52999, 0.80236},
 };
-
+ */
+/*
 float Death_CD4_rates[2][4][7]={
     {   {0.00321, 0.00912, 0.00733, 0.01281, 0.02161, 0.03741, 0.84544},
         {0.00403, 0.01145, 0.00921, 0.01608, 0.02713, 0.04696, 1.06123},
@@ -55,6 +77,7 @@ float Death_CD4_rates[2][4][7]={
         {0.00740, 0.02101, 0.01690, 0.02952, 0.04980, 0.08620, 1.94813},
     }
 };
+ */
 
 
 float ART_CD4_rates[2][4][7]={
@@ -70,6 +93,8 @@ float ART_CD4_rates[2][4][7]={
         {0.00677, 0.01416, 0.02495, 0.04362, 0.07563, 0.04681, 0.03685},
     }
 };
+
+ 
 
 
 //////////////////////////////////////
@@ -172,7 +197,7 @@ void EventMyHIVInfection(person *MyPointerToPerson){
 	
 		//// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
         double FindART_CD4_rate = ART_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
-        double FindCD4_rate = CD4_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
+        double FindCD4_rate = CD4_prog_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
         double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
         
         
@@ -294,7 +319,7 @@ void EventCD4change(person *MyPointerToPerson){
         
             //// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
             double FindART_CD4_rate = ART_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
-            double FindCD4_rate = CD4_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
+            double FindCD4_rate = CD4_prog_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
             double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
             
             
