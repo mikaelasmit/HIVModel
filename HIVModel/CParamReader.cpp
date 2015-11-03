@@ -12,6 +12,8 @@
 #include <vector>
 #include <string>
 #include "CParamReader.hpp"
+#include "errorcoutmacro.h"
+
 
 using namespace std;
 
@@ -84,13 +86,13 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
             {
                 columns=0;                                      // Initialise the rows and columns back to 0
                 rows=0;
-                cout << "Token: " << token << endl;
+                E(cout << "The following is being loaded " << token << endl;)
                 
                 while (token[0]!=';')
                 {
                     // 1. Lets get the next line and first line of data
                     paramFileStream.getline(paramBuffer,BUFFER_SIZE-1);         // this updates 'token'
-                    cout << "Token: " << token << endl;
+                    //cout << "Token: " << token << endl;
                     // We will run this until we find the ; - which annotes end of the variable data
                     if (token[0]!=';' && token[0]!=' ' && token!=NULL && token[0]!='#')
                     {
@@ -100,7 +102,7 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
                         {nullTerminal--;}
                         token[nullTerminal] = '\0';                             // ends the string in a specific way
                         paramString = strtok(token,"\n");                       // copy the clean data (w/o spaces) to temporary 'holding' container
-                        cout << paramString << endl;
+                        //cout << paramString << endl;
                         
                         // 3. Lets add the data to the paramContainer
                         if (rows==0)
@@ -112,7 +114,7 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
                             for(int c=0; c<nullTerminal; c++)
                             {if (paramContainer[c]=='\t'){columns++;}}
                             columns=columns+1;                      // As we removed spaces at the end we need to add 1
-                            cout << "Columns check: " << columns << endl;
+                            //cout << "Columns check: " << columns << endl;
                         }
                         
                         // 5. Add the next line to the holding container
@@ -126,9 +128,9 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
                         // 6. Lets count the number of rows
                         rows++;
                         
-                        cout << "Round 2: " << endl;
-                        cout << "ParamStr: \t" << paramString << endl;
-                        cout << "Container: \t" << paramContainer << endl;
+                        //cout << "Round 2: " << endl;
+                        //cout << "ParamStr: \t" << paramString << endl;
+                        //cout << "Container: \t" << paramContainer << endl;
                     }
                 }
                 found = true;
@@ -149,7 +151,7 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
     for(int j=0;j<nullTerminal;j++)
     {if(paramContainer[j]=='\t') {count++;}}
     nElements=count + (1*rows);
-    cout << "NElement check: " << nElements << endl;
+    //cout << "NElement check: " << nElements << endl;
     
     paramFileStream.close();
     

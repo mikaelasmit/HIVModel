@@ -81,10 +81,16 @@ int main(){
     loadHIVArray_Women();
     loadHIVArray_Men();
     
-    loadCD4DeathArray();
+    
     loadCD4StartArray();
     loadCD4ProgArray();
+    loadCD4DeathArray();
+    loadCD4ARTArray();
     
+    loadNrChildren();
+    loadAgeDistribution();
+    loadAgeMin();
+    loadAgeMax();
     
     
     cout << "We finished loading the arrays" << endl;

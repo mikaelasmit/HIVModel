@@ -28,10 +28,16 @@ double** HIVArray_Men;
 double*** CD4_startarray;
 double**  CD4_prog_rates;
 double*** Death_CD4_rates;
+double*** ART_CD4_rates;
+double**  NrChildrenArray;
+double**   Age1950Array;
+int*      ArrayMin;
+int*      ArrayMax;
 
 //// --- Load parameters --- ////
 void loadCD4StartArray(){
     
+    E(cout<< "The CD4_startarray Parameter is being loaded" << endl;)
     // 1. make a param reader object.
     CParamReader myReader;
     char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
@@ -52,9 +58,10 @@ void loadCD4StartArray(){
     vector<double> data;
     
     
+    
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
     
     
     // Lets convert to an array
@@ -83,16 +90,20 @@ void loadCD4StartArray(){
             for (int i=0; i<col; i++){
                 int NElement=i+(j*col)+(l*row*col);
                 CD4_startarray[l][j][i]=data[NElement];
-                cout << "NElement: " << NElement << " data x: " << data[NElement] << " and CD4_array " << CD4_startarray[l][j][i] << endl;
+                //cout << "L: " << l << " J: " << j << " and i: " << i << endl;
+                //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and CD4_array " << CD4_startarray[l][j][i] << endl;
             }
         }
     }
+    E(cout<< "The CD4_startarray Parameter has been loaded" << endl;)
 }
 
 
 
 void loadCD4ProgArray()
 {
+    E(cout<< "The CD4_prog_rates Parameter is being loaded" << endl;)
+    
     // 1. make a param reader object.
     CParamReader myReader;
     char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
@@ -115,7 +126,7 @@ void loadCD4ProgArray()
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
     
     
     // Lets convert to an array
@@ -140,18 +151,20 @@ void loadCD4ProgArray()
     for (int j=0; j<row; j++){
         for (int i=0; i<col; i++){
             int NElement=i+(j*col);
+            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << " Data point: " << data[0] << endl;
             CD4_prog_rates[j][i]=data[NElement];
-            cout << "J: " << j << " and i: " << i << endl;
-            cout << "NElement: " << NElement << " data x: " << data[NElement] << " and CD4_array " << CD4_prog_rates[j][i] << endl;
-            
+            //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and CD4_prog_rates " << CD4_prog_rates[j][i] << endl;
         }
     }
+    E(cout<< "The CD4_prog_rates Parameter has been loaded" << endl;)
 }
 
 
 
 void loadCD4DeathArray()
 {
+    E(cout<< "The CD4_death_rates Parameter is being loaded" << endl;)
+    
     // 1. make a param reader object.
     CParamReader myReader;
     char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
@@ -174,7 +187,7 @@ void loadCD4DeathArray()
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
     
     
     // Lets convert to an array
@@ -203,17 +216,307 @@ void loadCD4DeathArray()
             for (int i=0; i<col; i++){
                 int NElement=i+(j*col)+(l*row*col);
                 Death_CD4_rates[l][j][i]=data[NElement];
-                cout << "NElement: " << NElement << " data x: " << data[NElement] << " and CD4_array " << Death_CD4_rates[l][j][i] << endl;
+                //cout << "L: " << l << " J: " << j << " and i: " << i << endl;
+                //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and Death_CD4_rates " << Death_CD4_rates[l][j][i] << endl;
             }
         }
     }
+    E(cout<< "The CD4_death_rates Parameter has been loaded" << endl;)
 }
 
 
 
 
-void loadCD4ARTArray();
+void loadCD4ARTArray()
+{
+    E(cout<< "The CD4_ART_rates Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "CD4_ART_rates";       // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array
+    int levels=2;
+    int row=nr_rows/2;
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    ART_CD4_rates = new double **[levels];
+    for (int i=0; i<levels; i++)
+    {ART_CD4_rates[i] = new double *[row];}
+    for (int i=0; i<levels; i++)
+    {for (int j=0; j<row; j++)
+    {ART_CD4_rates[i][j] = new double [col];}}
+    
+    for (int l=0; l<levels; l++){
+        for (int j=0; j<row; j++){
+            for (int i=0; i<col; i++){
+                int NElement=i+(j*col)+(l*row*col);
+                ART_CD4_rates[l][j][i]=data[NElement];
+                //cout << "L: " << l << " J: " << j << " and i: " << i << endl;
+                //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and ART_CD4_rates " << ART_CD4_rates[l][j][i] << endl;
+            }
+        }
+    }
+    E(cout<< "The CD4_ART_rates Parameter has been loaded" << endl;)
+}
 
+
+
+void loadNrChildren()
+{
+    E(cout<< "The Nr_Children Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "Nr_Children";        // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array
+    int row=nr_rows;
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    NrChildrenArray = new double *[row];
+    for (int i=0; i<row; i++)
+    {
+        NrChildrenArray[i] = new double [col];
+    }
+    
+    for (int j=0; j<row; j++){
+        for (int i=0; i<col; i++){
+            int NElement=i+(j*col);
+            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << " Data point: " << data[0] << endl;
+            NrChildrenArray[j][i]=data[NElement];
+            //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NrChildrenArray " << NrChildrenArray[j][i] << endl;
+        }
+    }
+    E(cout<< "The Nr_Children Parameter has been loaded" << endl;)
+}
+
+
+
+void loadAgeDistribution()
+{
+    E(cout<< "The Age1950Array Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "Age1950Array";        // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array
+    int row=nr_rows;
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    Age1950Array = new double *[row];
+    for (int i=0; i<row; i++)
+    {
+        Age1950Array[i] = new double [col];
+    }
+    
+    for (int j=0; j<row; j++){
+        for (int i=0; i<col; i++){
+            int NElement=i+(j*col);
+            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << endl;
+            Age1950Array[j][i]=data[NElement];
+            //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and Age1950Array " << Age1950Array[j][i] << endl;
+        }
+    }
+    E(cout<< "The Age1950Array Parameter has been loaded" << endl;)
+}
+
+
+
+void loadAgeMin()
+{
+    E(cout<< "The ArrayMin Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "ArrayMin";        // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    ArrayMin= new int [col];
+    
+    for (int i=0; i<col; i++){
+        //cout << "I: " << i << " I: " << i << endl;
+        ArrayMin[i]=data[i];
+        //cout << "ArrayMin " << ArrayMin[i] << endl;
+    }
+    E(cout<< "The ArrayMin Parameter has been loaded" << endl;)
+}
+
+
+
+void loadAgeMax()
+{
+    E(cout<< "The ArrayMax Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "ArrayMax";        // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    ArrayMax= new int [col];
+    
+    for (int i=0; i<col; i++){
+        //cout << "I: " << i << " I: " << i << endl;
+        ArrayMax[i]=data[i];
+        //cout << "Age1950Array " << ArrayMax[i] << endl;
+    }
+    E(cout<< "The ArrayMax Parameter has been loaded" << endl;)
+}
 
 
 

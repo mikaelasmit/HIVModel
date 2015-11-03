@@ -26,6 +26,10 @@ void loadCD4ProgArray();
 void loadCD4DeathArray();
 void loadCD4ARTArray();
 
+void loadNrChildren();
+void loadAgeDistribution();
+void loadAgeMin();
+void loadAgeMax();
 
 
 
