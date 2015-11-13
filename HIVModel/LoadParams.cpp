@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-#include <fstream>										// some important libraries for reading in the arrays
+#include <fstream>										// Adding some important libraries for reading in the arrays
 #include <sstream>
 #include <string>
 #include <vector>
@@ -19,20 +19,31 @@ using namespace std;
 
 
 //// --- Pointers to external arrays --- ////
+
+// Big Arrays
 double** BirthArray;									// This  is a pointer to an array!! i.e pointer to pointer :)
 double** DeathArray_Women;
 double** DeathArray_Men;
 double** HIVArray_Women;
 double** HIVArray_Men;
 
+// HIV Arrays
 double*** CD4_startarray;
 double**  CD4_prog_rates;
 double*** Death_CD4_rates;
 double*** ART_CD4_rates;
+
+// Demographic Arrays
 double**  NrChildrenArray;
-double**   Age1950Array;
+double**  Age1950Array;
 int*      ArrayMin;
 int*      ArrayMax;
+
+// NCD Arrays
+int*      NCDAgeArrayMin;
+int*      NCDAgeArrayMax;
+double*** NCDArray;
+
 
 //// --- Load parameters --- ////
 void loadCD4StartArray(){
@@ -50,18 +61,18 @@ void loadCD4StartArray(){
     
     
     // Some essential variables
-    char ParamName[] = "CD4_startarray";        // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "CD4_startarray";                // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl << " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -71,7 +82,7 @@ void loadCD4StartArray(){
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int levels=2;
     int row=nr_rows/2;
     int col=nr_columns;
@@ -116,17 +127,17 @@ void loadCD4ProgArray()
     
     
     // Some essential variables
-    char ParamName[] = "CD4_prog_rates";        // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "CD4_prog_rates";                // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -136,7 +147,7 @@ void loadCD4ProgArray()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int row=nr_rows;
     int col=nr_columns;
     
@@ -151,8 +162,8 @@ void loadCD4ProgArray()
     for (int j=0; j<row; j++){
         for (int i=0; i<col; i++){
             int NElement=i+(j*col);
-            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << " Data point: " << data[0] << endl;
             CD4_prog_rates[j][i]=data[NElement];
+            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << endl;
             //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and CD4_prog_rates " << CD4_prog_rates[j][i] << endl;
         }
     }
@@ -177,17 +188,17 @@ void loadCD4DeathArray()
     
     
     // Some essential variables
-    char ParamName[] = "CD4_death_rates";       // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "CD4_death_rates";               // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -197,7 +208,7 @@ void loadCD4DeathArray()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int levels=2;
     int row=nr_rows/2;
     int col=nr_columns;
@@ -243,17 +254,17 @@ void loadCD4ARTArray()
     
     
     // Some essential variables
-    char ParamName[] = "CD4_ART_rates";       // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "CD4_ART_rates";                 // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -263,7 +274,7 @@ void loadCD4ARTArray()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int levels=2;
     int row=nr_rows/2;
     int col=nr_columns;
@@ -308,17 +319,17 @@ void loadNrChildren()
     
     
     // Some essential variables
-    char ParamName[] = "Nr_Children";        // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "Nr_Children";                   // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -328,7 +339,7 @@ void loadNrChildren()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int row=nr_rows;
     int col=nr_columns;
     
@@ -343,8 +354,8 @@ void loadNrChildren()
     for (int j=0; j<row; j++){
         for (int i=0; i<col; i++){
             int NElement=i+(j*col);
-            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << " Data point: " << data[0] << endl;
             NrChildrenArray[j][i]=data[NElement];
+            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << " Data point: " << data[0] << endl;
             //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NrChildrenArray " << NrChildrenArray[j][i] << endl;
         }
     }
@@ -369,17 +380,17 @@ void loadAgeDistribution()
     
     
     // Some essential variables
-    char ParamName[] = "Age1950Array";        // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "Age1950Array";                  // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -389,7 +400,7 @@ void loadAgeDistribution()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int row=nr_rows;
     int col=nr_columns;
     
@@ -404,8 +415,8 @@ void loadAgeDistribution()
     for (int j=0; j<row; j++){
         for (int i=0; i<col; i++){
             int NElement=i+(j*col);
-            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << endl;
             Age1950Array[j][i]=data[NElement];
+            //cout << "J: " << j << " and i: " << i << " NElement: " << NElement << endl;
             //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and Age1950Array " << Age1950Array[j][i] << endl;
         }
     }
@@ -430,17 +441,17 @@ void loadAgeMin()
     
     
     // Some essential variables
-    char ParamName[] = "ArrayMin";        // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "ArrayMin";                      // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -450,7 +461,7 @@ void loadAgeMin()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int col=nr_columns;
     
     
@@ -458,8 +469,8 @@ void loadAgeMin()
     ArrayMin= new int [col];
     
     for (int i=0; i<col; i++){
-        //cout << "I: " << i << " I: " << i << endl;
         ArrayMin[i]=data[i];
+        //cout << "I: " << i << " I: " << i << endl;
         //cout << "ArrayMin " << ArrayMin[i] << endl;
     }
     E(cout<< "The ArrayMin Parameter has been loaded" << endl;)
@@ -483,17 +494,17 @@ void loadAgeMax()
     
     
     // Some essential variables
-    char ParamName[] = "ArrayMax";        // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                // These will provide all the correct dimensions
+    char ParamName[] = "ArrayMax";                      // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
     int nr_rows;
     int nr_columns;
-    stringstream ss;                            // These will be needed to convert from a) char* to vector and b) from vector to array
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
     vector<double> data;
     
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << "FINAL!!!: " << ParamName << " = " << myValue << ": length = " << length << " nr_rows: " << nr_rows << " nr_columns: " << nr_columns << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     
     
     // Lets convert to an array
@@ -503,7 +514,7 @@ void loadAgeMax()
     while (ss >> a){data.push_back(a);}
     
     
-    // B. Second convert vector to array
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
     int col=nr_columns;
     
     
@@ -511,12 +522,184 @@ void loadAgeMax()
     ArrayMax= new int [col];
     
     for (int i=0; i<col; i++){
-        //cout << "I: " << i << " I: " << i << endl;
         ArrayMax[i]=data[i];
-        //cout << "Age1950Array " << ArrayMax[i] << endl;
+        //cout << "I: " << i << " I: " << i << endl;
+        //cout << "ArrayMax " << ArrayMax[i] << endl;
     }
     E(cout<< "The ArrayMax Parameter has been loaded" << endl;)
 }
+
+
+
+void loadNCDAgeArrayMin()
+{
+    E(cout<< "The NCDAgeArrayMax Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "NCDAgeArrayMin";                // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    NCDAgeArrayMin= new int [col];
+    
+    for (int i=0; i<col; i++){
+        NCDAgeArrayMin[i]=data[i];
+        //cout << "I: " << i << " I: " << i << endl;
+        //cout << "NCDAgeArrayMin " << NCDAgeArrayMin[i] << endl;
+    }
+    E(cout<< "The NCDAgeArrayMin Parameter has been loaded" << endl;)
+}
+
+
+
+void loadNCDAgeArrayMax()
+{
+    E(cout<< "The NCDAgeArrayMax Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "NCDAgeArrayMax";                // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    NCDAgeArrayMax= new int [col];
+    
+    for (int i=0; i<col; i++){
+        NCDAgeArrayMax[i]=data[i];
+        //cout << "I: " << i << " I: " << i << endl;
+        //cout << "NCDAgeArrayMax " << NCDAgeArrayMax[i] << endl;
+    }
+    E(cout<< "The NCDAgeArrayMax Parameter has been loaded" << endl;)
+}
+
+
+
+void loadNCDArray()
+{
+    E(cout<< "The NCDArray Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "NCDArray";                      // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
+    int levels=2;
+    int row=nr_rows/2;
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    NCDArray = new double **[levels];
+    for (int i=0; i<levels; i++)
+    {NCDArray[i] = new double *[row];}
+    for (int i=0; i<levels; i++)
+    {for (int j=0; j<row; j++)
+    {NCDArray[i][j] = new double [col];}}
+    
+    for (int l=0; l<levels; l++){
+        for (int j=0; j<row; j++){
+            for (int i=0; i<col; i++){
+                int NElement=i+(j*col)+(l*row*col);
+                NCDArray[l][j][i]=data[NElement];
+                //cout << "L: " << l << " J: " << j << " and i: " << i << endl;
+                //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NCDArray " << NCDArray[l][j][i] << endl;
+            }
+        }
+    }
+    E(cout<< "The NCDArray Parameter has been loaded" << endl;)
+}
+
 
 
 

@@ -31,6 +31,10 @@ void loadAgeDistribution();
 void loadAgeMin();
 void loadAgeMax();
 
+void loadNCDAgeArrayMin();
+void loadNCDAgeArrayMax();
+void loadNCDArray();
+
 
 
 

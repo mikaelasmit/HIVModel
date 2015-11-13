@@ -75,22 +75,33 @@ int main(){
     
     //// Load parameters
     cout << "We got to section 1 - We are loading the arrays" << endl;
+    
+    loadNCDAgeArrayMin();
+    loadNCDAgeArrayMax();
+    loadNCDArray();
+    
+    // Load Large Arrays
     loadBirthArray();
     loadDeathArray_Women();
     loadDeathArray_Men();
     loadHIVArray_Women();
     loadHIVArray_Men();
     
+    // Load Demographic Arrays
+    loadNrChildren();
+    loadAgeDistribution();
+    loadAgeMin();
+    loadAgeMax();
     
+    // Load HIV Arrays
     loadCD4StartArray();
     loadCD4ProgArray();
     loadCD4DeathArray();
     loadCD4ARTArray();
     
-    loadNrChildren();
-    loadAgeDistribution();
-    loadAgeMin();
-    loadAgeMax();
+    
+    
+    
     
     
     cout << "We finished loading the arrays" << endl;
@@ -132,6 +143,8 @@ int main(){
         if (MyArrayOfPointersToPeople[i]->Sex == 2 && MyArrayOfPointersToPeople[i]->Age<50 && MyArrayOfPointersToPeople[i]->AgeAtDeath>=15) {(MyArrayOfPointersToPeople[i])->GetDateOfBaby();}		// --- Assign Birth of all Children- ---
         
         (MyArrayOfPointersToPeople[i])->GetMyDateOfHIVInfection();
+        
+        (MyArrayOfPointersToPeople[i])->GetMyDateNCD();
     }
     cout << "We got to section 2 - We finished crating a population" << endl;
     
@@ -163,7 +176,7 @@ int main(){
     FILE* Project1;
     Project1 = fopen("/Users/Mikaela/Documents/MATLAB/HIV check/Project2.csv","w");
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d \n",
+        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -174,7 +187,16 @@ int main(){
                 MyArrayOfPointersToPeople[i]->AgeAtDeath,
                 MyArrayOfPointersToPeople[i]->HIV,
                 MyArrayOfPointersToPeople[i]->CD4_cat,
-                MyArrayOfPointersToPeople[i]->ART
+                MyArrayOfPointersToPeople[i]->ART,
+                MyArrayOfPointersToPeople[i]->Diabetes,
+                MyArrayOfPointersToPeople[i]->HC,
+                MyArrayOfPointersToPeople[i]->HT,
+                MyArrayOfPointersToPeople[i]->Malig,
+                MyArrayOfPointersToPeople[i]->MI,
+                MyArrayOfPointersToPeople[i]->Osteo,
+                MyArrayOfPointersToPeople[i]->CKD,
+                MyArrayOfPointersToPeople[i]->Stroke
+        
                 
                 );}
     fclose(Project1);

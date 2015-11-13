@@ -31,10 +31,10 @@ extern person** MyArrayOfPointersToPeople;									// Pointer to MyArrayOfPointe
 extern int *p_PY;															// Pointer to show which year range we are on
 extern vector<event*> Events;
 
-extern double ***CD4_startarray;
-extern double  **CD4_prog_rates;
-extern double ***Death_CD4_rates;
-extern double ***ART_CD4_rates;
+extern double*** CD4_startarray;
+extern double**  CD4_prog_rates;
+extern double*** Death_CD4_rates;
+extern double*** ART_CD4_rates;
 
 
 
@@ -102,6 +102,8 @@ void EventBirth(person *MyPointerToPerson){
 		(MyArrayOfPointersToPeople[total_population-1])->GetDateOfDeath();
 		(MyArrayOfPointersToPeople[total_population-1])->GetDateOfBaby();
 		(MyArrayOfPointersToPeople[total_population-1])->GetMyDateOfHIVInfection();
+        (MyArrayOfPointersToPeople[total_population-1])->GetMyDateNCD();
+        
 
 	
 		// Link Mother and Child
