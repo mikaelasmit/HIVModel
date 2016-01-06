@@ -371,12 +371,6 @@ void person::GetMyDateNCD(){
     int max_index=0;
     int max_nr=1;
     while (max_nr>NCDArray[0][0][max_index]){max_index++;}
-    cout << "Max_index: " << max_index << endl;
-    
-    // Then lets get count how many NCDs we include automatically to avoid errors
-    cout << "CHECKING: " << nr_NCDs << endl;
-    
-    
     
     
     // Some basic code 
@@ -384,27 +378,27 @@ void person::GetMyDateNCD(){
     double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
     
     
-    while (ncd<8){
+    while (ncd<nr_NCDs){
         
         double r = ((double) rand() / (RAND_MAX));              // Get a random number for each NCD
-        cout << "NCD: " << ncd <<  " and R: " << r << endl;
+        //cout << "NCD: " << ncd <<  " and R: " << r << endl;
         
         int i=0;
         while (r>NCDArray[Sex-1][ncd][i] && i<max_index){i++;}
         
-        cout << "Patients's sex is: " << Sex << " Patient ID " << PersonID << endl;
-        cout << "NCDArray element: " << NCDArray[Sex-1][ncd][i] << endl;
-        cout << "NCD: " << ncd << " R: " << r << " I: " << i << endl << endl;
+        //cout << "Patients's sex is: " << Sex << " Patient ID " << PersonID << endl;
+        //cout << "NCDArray element: " << NCDArray[Sex-1][ncd][i] << endl;
+        //cout << "NCD: " << ncd << " R: " << r << " I: " << i << endl << endl;
         
         if (NCDArray[Sex-1][ncd][i]<1){                         // If they will get and NCD lets get the age and date
             // Lets get the age they will develop the NCD
             double Age_NCD = RandomMinMax(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);
-            cout << "Min: " << NCDAgeArrayMin[i] << " Max: " << NCDAgeArrayMax[i] << endl;
-            cout << "Age: " << Age_NCD << endl;
+            //cout << "Min: " << NCDAgeArrayMin[i] << " Max: " << NCDAgeArrayMax[i] << endl;
+            //cout << "Age: " << Age_NCD << endl;
             double YearFraction=(RandomMinMax(1,12))/12.1;		// This gets month of birth as a fraction of a year
             Age_NCD=Age_NCD+YearFraction;
             double Date_NCD=DoB+Age_NCD;
-            cout << "Age: " << Age_NCD << " Year Fraction: " << YearFraction << " DateNCD: " << Date_NCD << endl;
+            //cout << "Age: " << Age_NCD << " Year Fraction: " << YearFraction << " DateNCD: " << Date_NCD << endl;
             
             if      (ncd==0)    {Diabetes=Date_NCD;}
             else if (ncd==1)    {HC=Date_NCD;}
