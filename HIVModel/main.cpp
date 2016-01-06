@@ -90,6 +90,11 @@ int main(){
     loadHIVArray_Women();
     loadHIVArray_Men();
     
+    // Load Demographic Arrays
+    loadNrChildren();
+    loadAgeDistribution();
+    loadAgeMin();
+    loadAgeMax();
     
     // Load Demographic Arrays
     loadNrChildren();
