@@ -8,17 +8,8 @@
 #define person_h
 #include <vector>
 
-
-
 using namespace std;
 
-
-//// --- External Arrays --- ////
-/*void loadBirthArray();								// functions to load arrays
-void loadDeathArray_Women();
-void loadDeathArray_Men();
-void loadHIVArray_Women();
-void loadHIVArray_Men();*/
 
 
 //// --- CREATING PEOPLE --- ////
@@ -48,6 +39,16 @@ public:
     int CD4_cat_start;
     int CD4_cat;
     int ART;
+    
+    double Diabetes;
+    double HC;
+    double HT;
+    double Malig;
+    double MI;
+    double Osteo;
+    double CKD;
+    double Stroke;
+    
     
     
     //// --- FUNCTIONS --- ////
@@ -79,6 +80,10 @@ public:
     
     // --- Date of Infection ---
     void GetMyDateOfHIVInfection();
+    
+    // --- Date of NCDs ---
+    void GetMyDateNCD();
+    
     
 };	
 

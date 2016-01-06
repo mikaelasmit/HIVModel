@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////
 //    Mikaela Epidemiology Model							  //
 //    Created by Mikaela Smit on 7/11/2014.				      //
 //    Copyright (c) 2014 Mikaela Smit. All rights reserved.   //
@@ -55,7 +55,7 @@ double *p_GT;																// Pointer to global time
 int *p_PY;																	// Pointer to show which year range we are on
 int PY=0;																	// Set the first pointer to year range reference to 0
 double StartYear=1950;														// Define Start Year if the model and set it to year of choice
-int EndYear=2010;															// If endyear is more than 2010, some things will need to get changes, an error message below has been set up as reminder
+int EndYear=2030;															// If endyear is more than 2010, some things will need to get changes, an error message below has been set up as reminder
 
 const long long int final_number_people=100000000;							// To determine the final size of the total population to be modeled
 int init_pop =59100;                                                        // Initial population 1st Jan 1950 as 5910 (see Excel for calculation)
@@ -67,6 +67,7 @@ person** MyArrayOfPointersToPeople = new person*[final_number_people];		// First
 vector<event *> Events;
 
 
+
 //// --- RUN THE MAIN MODEL ---
 int main(){
     
@@ -75,6 +76,14 @@ int main(){
     
     //// Load parameters
     cout << "We got to section 1 - We are loading the arrays" << endl;
+    
+    
+    loadNCDAgeArrayMin();
+    loadNCDAgeArrayMax();
+    loadNCDArray();
+    
+    
+    // Load Large Arrays
     loadBirthArray();
     loadDeathArray_Women();
     loadDeathArray_Men();
@@ -82,19 +91,21 @@ int main(){
     loadHIVArray_Men();
     
     
-    loadCD4StartArray();
-    loadCD4ProgArray();
-    loadCD4DeathArray();
-    loadCD4ARTArray();
-    
+    // Load Demographic Arrays
     loadNrChildren();
     loadAgeDistribution();
     loadAgeMin();
     loadAgeMax();
     
     
-    cout << "We finished loading the arrays" << endl;
+    // Load HIV Arrays
+    loadCD4StartArray();
+    loadCD4ProgArray();
+    loadCD4DeathArray();
+    loadCD4ARTArray();
     
+    
+    cout << "We finished loading the arrays" << endl;
     
     
     
@@ -132,6 +143,8 @@ int main(){
         if (MyArrayOfPointersToPeople[i]->Sex == 2 && MyArrayOfPointersToPeople[i]->Age<50 && MyArrayOfPointersToPeople[i]->AgeAtDeath>=15) {(MyArrayOfPointersToPeople[i])->GetDateOfBaby();}		// --- Assign Birth of all Children- ---
         
         (MyArrayOfPointersToPeople[i])->GetMyDateOfHIVInfection();
+        
+        (MyArrayOfPointersToPeople[i])->GetMyDateNCD();
     }
     cout << "We got to section 2 - We finished crating a population" << endl;
     
@@ -163,7 +176,7 @@ int main(){
     FILE* Project1;
     Project1 = fopen("/Users/Mikaela/Documents/MATLAB/HIV check/Project2.csv","w");
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d \n",
+        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -174,7 +187,16 @@ int main(){
                 MyArrayOfPointersToPeople[i]->AgeAtDeath,
                 MyArrayOfPointersToPeople[i]->HIV,
                 MyArrayOfPointersToPeople[i]->CD4_cat,
-                MyArrayOfPointersToPeople[i]->ART
+                MyArrayOfPointersToPeople[i]->ART,
+                MyArrayOfPointersToPeople[i]->Diabetes,
+                MyArrayOfPointersToPeople[i]->HC,
+                MyArrayOfPointersToPeople[i]->HT,
+                MyArrayOfPointersToPeople[i]->Malig,
+                MyArrayOfPointersToPeople[i]->MI,
+                MyArrayOfPointersToPeople[i]->Osteo,
+                MyArrayOfPointersToPeople[i]->CKD,
+                MyArrayOfPointersToPeople[i]->Stroke
+        
                 
                 );}
     fclose(Project1);

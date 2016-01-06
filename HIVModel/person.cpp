@@ -25,6 +25,7 @@ extern int *p_PY;										// Pointer to show which year range we are on
 extern priority_queue<event*, vector<event*>, timeComparison> *p_PQ;	// Tell this .cpp that there is a priorty_queue externall and define pointer to it
 extern vector<event*> Events;
 extern person** MyArrayOfPointersToPeople;				// Pointer to MyArrayOfPointersToPeople
+extern int       nr_NCDs;
 
 
 //// --- Pointers to external arrays --- ////
@@ -38,6 +39,11 @@ extern double** NrChildrenArray;
 extern double** Age1950Array;
 extern int*     ArrayMin;
 extern int*     ArrayMax;
+
+extern double*** NCDArray;
+extern int*      NCDAgeArrayMin;
+extern int*      NCDAgeArrayMax;
+
 
 
 //// --- Important Internal informtaion --- ////
@@ -61,7 +67,7 @@ person::person()											// First 'person' class second constructor/variable a
     
     DoB=-999;												// --- Varibales related to peoples' age and birthday ---
     Age=-999;
-    // --- Variables related to birth of children ---
+                                                            // --- Variables related to birth of children ---
     MotherID=-999;											// Dummy value (i.e. those born before 1950 will not have the ID of mother)
     ChildIDVector.resize(0);								// Vector to store pointer to children.  Make sure it's starting size is 0 at the beginning
     DatesBirth.resize(0);									// This will be used to push in all births of every child
@@ -74,10 +80,21 @@ person::person()											// First 'person' class second constructor/variable a
     CD4_cat_start=-999;
     CD4_cat=-999;											// Where 0=>500, 1=350-500, 2=250-350, 3=200-250, 4=100-200, 5=50-100, and 6=<50
     ART=-999;												// Where HIV and ART 0=No and 1=Yes
+    
+    Diabetes=-999;                                          // --- Variables related to NCDs ---
+    HC=-999;
+    HT=-999;
+    Malig=-999;
+    MI=-999;
+    Osteo=-999;
+    CKD=-999;
+    Stroke=-999;
 }
 
 
 //// --- FUNCTION TO ASSIGN CHARACTERISTIC FOR INITIAL POPULATION --- ////
+
+
 
 // --- Assign Person ID ---
 void person::PersonIDAssign(int x){
@@ -343,4 +360,83 @@ void person::GetMyDateOfHIVInfection(){
     E(cout << "We have finished checking if this person will get HIV in their lfe time, the person's future HIV status is " << HIV << endl;)
     
 };
+
+
+// --- Assign NCD  ---
+void person::GetMyDateNCD(){
+    
+    E(cout << endl << endl << "We are assigning NCDs!" << endl;)
+    
+    // First lets get index for NOT getting the NCD             // This is to make it automatic.  We currently use 6 age groups for NCds, but we may use more, less in the future
+    int max_index=0;
+    int max_nr=1;
+    while (max_nr>NCDArray[0][0][max_index]){max_index++;}
+    cout << "Max_index: " << max_index << endl;
+    
+    // Then lets get count how many NCDs we include automatically to avoid errors
+    cout << "CHECKING: " << nr_NCDs << endl;
+    
+    
+    
+    
+    // Some basic code 
+    int ncd=0;                                                  // Assisgn all the possible NCDs in this code
+    double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+    
+    
+    while (ncd<8){
+        
+        double r = ((double) rand() / (RAND_MAX));              // Get a random number for each NCD
+        cout << "NCD: " << ncd <<  " and R: " << r << endl;
+        
+        int i=0;
+        while (r>NCDArray[Sex-1][ncd][i] && i<max_index){i++;}
+        
+        cout << "Patients's sex is: " << Sex << " Patient ID " << PersonID << endl;
+        cout << "NCDArray element: " << NCDArray[Sex-1][ncd][i] << endl;
+        cout << "NCD: " << ncd << " R: " << r << " I: " << i << endl << endl;
+        
+        if (NCDArray[Sex-1][ncd][i]<1){                         // If they will get and NCD lets get the age and date
+            // Lets get the age they will develop the NCD
+            double Age_NCD = RandomMinMax(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);
+            cout << "Min: " << NCDAgeArrayMin[i] << " Max: " << NCDAgeArrayMax[i] << endl;
+            cout << "Age: " << Age_NCD << endl;
+            double YearFraction=(RandomMinMax(1,12))/12.1;		// This gets month of birth as a fraction of a year
+            Age_NCD=Age_NCD+YearFraction;
+            double Date_NCD=DoB+Age_NCD;
+            cout << "Age: " << Age_NCD << " Year Fraction: " << YearFraction << " DateNCD: " << Date_NCD << endl;
+            
+            if      (ncd==0)    {Diabetes=Date_NCD;}
+            else if (ncd==1)    {HC=Date_NCD;}
+            else if (ncd==2)    {HT=Date_NCD;}
+            else if (ncd==3)    {Malig=Date_NCD;}
+            else if (ncd==4)    {MI=Date_NCD;}
+            else if (ncd==5)    {Osteo=Date_NCD;}
+            else if (ncd==6)    {CKD=Date_NCD;}
+            else if (ncd==7)    {Stroke=Date_NCD;}
+            
+        }
+        
+        else if (NCDArray[Sex-1][ncd][i]==1){             // If they dont get an NCD set date to -998
+            if      (ncd==0)    {Diabetes=Date_NCD;}
+            else if (ncd==1)    {HC=Date_NCD;}
+            else if (ncd==2)    {HT=Date_NCD;}
+            else if (ncd==3)    {Malig=Date_NCD;}
+            else if (ncd==4)    {MI=Date_NCD;}
+            else if (ncd==5)    {Osteo=Date_NCD;}
+            else if (ncd==6)    {CKD=Date_NCD;}
+            else if (ncd==7)    {Stroke=Date_NCD;}
+            
+        }
+        
+        ncd++;                                              // Lets do the next NCD
+    }
+    
+
+    E(cout << "We finished assigning NCDs!" << endl;)
+}
+
+
+
+
 
