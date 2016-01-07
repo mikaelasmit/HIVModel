@@ -664,10 +664,10 @@ void loadNCDArray()
     
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
     int nr_Conditions=nr_rows/2;
     nr_NCDs=nr_Conditions;
-    cout <<nr_NCDs << endl;
+    //cout <<nr_NCDs << endl;
     
     
     // Lets convert to an array
@@ -701,6 +701,7 @@ void loadNCDArray()
             }
         }
     }
+    
     E(cout<< "The NCDArray Parameter has been loaded" << endl;)
 }
 

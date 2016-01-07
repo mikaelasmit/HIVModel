@@ -36,6 +36,43 @@ extern double**  CD4_prog_rates;
 extern double*** Death_CD4_rates;
 extern double*** ART_CD4_rates;
 
+extern double*** NCDArray;
+extern int*      NCDAgeArrayMin;
+extern int*      NCDAgeArrayMax;
+
+
+//// --- Important Internal informtaion --- ////
+int RandomMinMax_2(int min, int max){							// Provide function for random number generator between min and max number
+    return rand()%(max-min+1)+min;							// !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
+}
+
+//?? --- NCD INTERACTION PARAMETERS --- ////
+double Risk_DiabHC=1.12;
+double Risk_DiabHT=1.4;
+double Risk_DiabCKD=1.5;
+double Risk_DiabCVD=2.31;
+
+double Risk_HCHT=1.277;
+double Risk_HCCVD=1.41;
+
+double Risk_HTCKD=1.69;
+double Risk_HTCVD=1.26;
+
+
+double Risk_NCD_Diabetes[5]={Risk_DiabHC, Risk_DiabHT, Risk_DiabCVD, Risk_DiabCKD, Risk_DiabCVD};
+int relatedNCDs_Diab[5]={1, 2, 4, 6, 7};
+int nr_NCD_Diab=sizeof(relatedNCDs_Diab)/sizeof(relatedNCDs_Diab[0]);
+
+                       
+double Risk_NCD_HC[3]={Risk_HCHT, Risk_HCCVD, Risk_HCCVD};
+int relatedNCDs_HC[3]={2, 4, 7};
+int nr_NCD_HC=sizeof(relatedNCDs_HC)/sizeof(relatedNCDs_HC[0]);
+
+
+double Risk_NCD_HT[3]={Risk_HTCVD, Risk_HTCKD, Risk_HTCVD};
+int relatedNCDs_HT[3]={4, 6, 7};
+int nr_NCD_HT=sizeof(relatedNCDs_HT)/sizeof(relatedNCDs_HT[0]);
+
 
 
 
@@ -332,6 +369,93 @@ void EventCD4change(person *MyPointerToPerson){
 }
 	
 
+
+void EventMyDiabetesDate(person *MyPointerToPerson){
+    
+    cout << endl << endl << "I just developed Diabetes, lets see if I am at an increased risk of other NCDs!" << endl;
+    
+    
+    // Some basic code and finding index for not getting NCDs
+    double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+    
+    
+    int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCDs, but we may use more, less in the future
+    int max_nr=1;
+    while (max_nr>NCDArray[0][0][max_index]){max_index++;}
+    
+    cout << "Max_ index: " << max_index << endl;
+    
+    
+    
+    // Re-evaluate HC/HT and Renal
+    
+    
+    cout << "Number of NCD for Diabetes: " << nr_NCD_Diab << endl;
+    cout << "Number of NCD for HC: " << nr_NCD_HC << endl;
+    cout << "Number of NCD for HT: " << nr_NCD_HT << endl;
+    
+    
+
+
+    // Lets see if the NCD risk is increased
+    int ncd_nr=0;
+    
+    
+    while (ncd_nr<nr_NCD_Diab)
+    {
+        cout << "We are doing NCD number: " << ncd_nr << endl;
+        int i=0;
+        double r = ((double) rand() / (RAND_MAX));              // Get a random number for each NCD
+        
+        
+        while (r>(NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i]*Risk_NCD_Diabetes[ncd_nr]) && i<max_index){i++;}
+        
+        
+        cout << "NCD cut-off: " << NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i] << endl;
+        cout << "NCD cut-off: " << NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i]*Risk_DiabHC  << endl;
+        cout << "R: " << r << " and i: " << i << endl;
+        
+        
+        if (i<max_index)
+        {
+            // Lets get the age and date they will have the NCD
+            double Age_NCD = RandomMinMax_2(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
+            double YearFraction=(RandomMinMax_2(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+            Age_NCD=Age_NCD+YearFraction;
+            double Date_NCD=MyPointerToPerson->DoB+Age_NCD;q
+            cout << "New Date: " << Date_NCD << " Old Date: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << endl;
+        }
+        
+        if (Date_NCD>*p_GT && Date_NCD<MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]))
+        {
+            
+            cout << "New Date: " << Date_NCD << " Old Date: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << endl;
+        }
+        
+        
+        ncd_nr++;
+    }
+    
+    E(cout << endl << endl << "Diabetes has developed and addition risks evaluated!" << endl;)
+    
+}
+
+
+void EventMyHypcholDate(person *MyPointerToPerson)			// Function executed when person develops hypercholesterolaemia
+{
+    cout << " I have HC " << endl;
+    
+}
+
+void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    cout << " I have HT " << endl;
+}
+//void EventMyMaligDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
+//void EventMyMIDate(person *MyPointerToPerson);              // Function executed when person develops hypertension
+//void EventMyOsteoDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
+//void EventMyCKDDate(person *MyPointerToPerson);             // Function executed when person develops hypertension
+//void EventMyStrokeDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
 
 
 

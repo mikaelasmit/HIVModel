@@ -22,3 +22,15 @@ using namespace std;
 	//// --- HIV Events ---
 	void EventMyHIVInfection(person *MyPointerToPerson);       // Function executed once person gets infecte with HIV
 	void EventCD4change(person *MyPointerToPerson);			   // Function executed when CD4 count is due to change (go down)
+
+
+    //// --- NCD Events ---
+    void EventMyDiabetesDate(person *MyPointerToPerson);        // Function executed when person develops diabetes
+    void EventMyHypcholDate(person *MyPointerToPerson);			// Function executed when person develops hypercholesterolaemia
+    void EventMyHyptenDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
+    void EventMyMaligDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
+    void EventMyMIDate(person *MyPointerToPerson);              // Function executed when person develops hypertension
+    void EventMyOsteoDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
+    void EventMyCKDDate(person *MyPointerToPerson);             // Function executed when person develops hypertension
+    void EventMyStrokeDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
+

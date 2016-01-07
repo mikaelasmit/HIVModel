@@ -48,6 +48,7 @@ public:
     double Osteo;
     double CKD;
     double Stroke;
+    vector<double> NCD_DatesVector;
     
     
     
