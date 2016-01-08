@@ -372,70 +372,130 @@ void EventCD4change(person *MyPointerToPerson){
 
 void EventMyDiabetesDate(person *MyPointerToPerson){
     
-    cout << endl << endl << "I just developed Diabetes, lets see if I am at an increased risk of other NCDs!" << endl;
-    
-    
-    // Some basic code and finding index for not getting NCDs
-    double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
-    
-    
-    int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCDs, but we may use more, less in the future
-    int max_nr=1;
-    while (max_nr>NCDArray[0][0][max_index]){max_index++;}
-    
-    cout << "Max_ index: " << max_index << endl;
+    E(cout << "I just developed Diabetes, lets see if I am at an increased risk of other NCDs!" << endl;)
     
     
     
-    // Re-evaluate HC/HT and Renal
-    
-    
-    cout << "Number of NCD for Diabetes: " << nr_NCD_Diab << endl;
-    cout << "Number of NCD for HC: " << nr_NCD_HC << endl;
-    cout << "Number of NCD for HT: " << nr_NCD_HT << endl;
-    
-    
-
-
-    // Lets see if the NCD risk is increased
-    int ncd_nr=0;
-    
-    
-    while (ncd_nr<nr_NCD_Diab)
+    if (MyPointerToPerson->Diabetes==0)
     {
-        cout << "We are doing NCD number: " << ncd_nr << endl;
-        int i=0;
-        double r = ((double) rand() / (RAND_MAX));              // Get a random number for each NCD
-        
-        
-        while (r>(NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i]*Risk_NCD_Diabetes[ncd_nr]) && i<max_index){i++;}
-        
-        
-        cout << "NCD cut-off: " << NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i] << endl;
-        cout << "NCD cut-off: " << NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i]*Risk_DiabHC  << endl;
-        cout << "R: " << r << " and i: " << i << endl;
-        
-        
-        if (i<max_index)
-        {
-            // Lets get the age and date they will have the NCD
-            double Age_NCD = RandomMinMax_2(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
-            double YearFraction=(RandomMinMax_2(1,12))/12.1;                          // This gets month of birth as a fraction of a year
-            Age_NCD=Age_NCD+YearFraction;
-            double Date_NCD=MyPointerToPerson->DoB+Age_NCD;q
-            cout << "New Date: " << Date_NCD << " Old Date: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << endl;
-        }
-        
-        if (Date_NCD>*p_GT && Date_NCD<MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]))
-        {
-            
-            cout << "New Date: " << Date_NCD << " Old Date: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << endl;
-        }
-        
-        
-        ncd_nr++;
-    }
+        // First lets update Diabetes status to make sure any over-written dates don't run the same cod again
+        MyPointerToPerson->Diabetes=1;
     
+        
+        
+        // Some basic code and finding index for not getting NCDs
+        int ncd_nr=0;
+        double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+    
+        int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCDs, but we may use more, less in the future
+        int max_nr=1;
+        while (max_nr>NCDArray[0][0][max_index]){max_index++;}
+
+        
+    
+        // Re-evaluate HC/HT and Renal
+        while (ncd_nr<nr_NCD_Diab)
+        {
+            // Get a random number for each NCD
+            int i=0;
+            double r = ((double) rand() / (RAND_MAX));
+            while (r>(NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_Diab[ncd_nr]][i]*Risk_NCD_Diabetes[ncd_nr]) && i<max_index){i++;}
+        
+
+            // If we are getting an NCD lets get the age and date of NCD
+            if (i<max_index)
+            {
+                // Lets get the age and date they will have the NCD
+                double Age_NCD = RandomMinMax_2(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
+                double YearFraction=(RandomMinMax_2(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+                Age_NCD=Age_NCD+YearFraction;
+                Date_NCD=MyPointerToPerson->DoB+Age_NCD;
+            }
+        
+        
+            // Lets see if this pushed forward the existing NCD date
+            if (Date_NCD>=*p_GT && Date_NCD<MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]))
+            {
+            
+                // Lets update the Date everywhere and add to queue
+                cout << "My old date is: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << endl;
+                MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr])=Date_NCD;
+                cout << "My new date is: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << endl;
+            
+                if (ncd_nr==0)
+                {
+                    MyPointerToPerson->HC=Date_NCD;
+                
+                    //// --- Lets feed Hypercholesterolaemia into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * HCEvent = new event;
+                    Events.push_back(HCEvent);
+                    HCEvent->time = MyPointerToPerson->HC;
+                    HCEvent->p_fun = &EventMyHypcholDate;
+                    HCEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(HCEvent);
+                }
+                
+                if (ncd_nr==1)
+                {
+                    MyPointerToPerson->HT=Date_NCD;
+                
+                    //// --- Lets feed Hypertension into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * HTEvent = new event;
+                    Events.push_back(HTEvent);
+                    HTEvent->time = MyPointerToPerson->HT;
+                    HTEvent->p_fun = &EventMyHyptenDate;
+                    HTEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(HTEvent);
+                }
+                
+                if (ncd_nr==2)
+                {
+                    MyPointerToPerson->MI=Date_NCD;
+                
+                    //// --- Lets feed MI into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * MIEvent = new event;
+                    Events.push_back(MIEvent);
+                    MIEvent->time = MyPointerToPerson->MI;
+                    MIEvent->p_fun = &EventMyMIDate;
+                    MIEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(MIEvent);
+                }
+                
+                if (ncd_nr==3)
+                {
+                    MyPointerToPerson->CKD=Date_NCD;
+                
+                    //// --- Lets feed CKD into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * CKDEvent = new event;
+                    Events.push_back(CKDEvent);
+                    CKDEvent->time = MyPointerToPerson->CKD;
+                    CKDEvent->p_fun = &EventMyCKDDate;
+                    CKDEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(CKDEvent);
+                }
+                
+                if (ncd_nr==4)
+                {
+                    MyPointerToPerson->Stroke=Date_NCD;
+                    
+                    //// --- Lets feed Stroke into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * StrokeEvent = new event;
+                    Events.push_back(StrokeEvent);
+                    StrokeEvent->time = MyPointerToPerson->Stroke;
+                    StrokeEvent->p_fun = &EventMyStrokeDate;
+                    StrokeEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(StrokeEvent);
+                }
+            }
+    
+            ncd_nr++;
+        }
+    }
     E(cout << endl << endl << "Diabetes has developed and addition risks evaluated!" << endl;)
     
 }
@@ -443,20 +503,239 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
 
 void EventMyHypcholDate(person *MyPointerToPerson)			// Function executed when person develops hypercholesterolaemia
 {
-    cout << " I have HC " << endl;
+    E(cout << "I just developed Hypercholesterol, lets see if I am at an increased risk of other NCDs!" << endl;)
+    
+    
+    
+    if (MyPointerToPerson->HC==0)
+    {
+        // First lets update Diabetes status to make sure any over-written dates don't run the same cod again
+        MyPointerToPerson->HC=1;
+        
+        
+        
+        // Some basic code and finding index for not getting NCDs
+        int ncd_nr=0;
+        double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+        
+        int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCDs, but we may use more, less in the future
+        int max_nr=1;
+        while (max_nr>NCDArray[0][0][max_index]){max_index++;}
+        
+        
+        
+        // Re-evaluate HC/HT and Renal
+        while (ncd_nr<nr_NCD_HC)
+        {
+            // Get a random number for each NCD
+            int i=0;
+            double r = ((double) rand() / (RAND_MAX));
+            while (r>(NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_HC[ncd_nr]][i]*Risk_NCD_HC[ncd_nr]) && i<max_index){i++;}
+            
+            
+            // If we are getting an NCD lets get the age and date of NCD
+            if (i<max_index)
+            {
+                // Lets get the age and date they will have the NCD
+                double Age_NCD = RandomMinMax_2(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
+                double YearFraction=(RandomMinMax_2(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+                Age_NCD=Age_NCD+YearFraction;
+                Date_NCD=MyPointerToPerson->DoB+Age_NCD;
+            }
+            
+            
+            // Lets see if this pushed forward the existing NCD date
+            if (Date_NCD>=*p_GT && Date_NCD<MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HC[ncd_nr]))
+            {
+                
+                // Lets update the Date everywhere and add to queue
+                cout << "My old date is: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HC[ncd_nr]) << endl;
+                MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HC[ncd_nr])=Date_NCD;
+                cout << "My new date is: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HC[ncd_nr]) << endl;
+                
+                
+                if (ncd_nr==0)
+                {
+                    MyPointerToPerson->HT=Date_NCD;
+                    
+                    //// --- Lets feed Hypertension into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * HTEvent = new event;
+                    Events.push_back(HTEvent);
+                    HTEvent->time = MyPointerToPerson->HT;
+                    HTEvent->p_fun = &EventMyHyptenDate;
+                    HTEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(HTEvent);
+                }
+                
+                if (ncd_nr==1)
+                {
+                    MyPointerToPerson->MI=Date_NCD;
+                    
+                    //// --- Lets feed MI into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * MIEvent = new event;
+                    Events.push_back(MIEvent);
+                    MIEvent->time = MyPointerToPerson->MI;
+                    MIEvent->p_fun = &EventMyMIDate;
+                    MIEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(MIEvent);
+                }
+                
+                if (ncd_nr==2)
+                {
+                    MyPointerToPerson->Stroke=Date_NCD;
+                    
+                    //// --- Lets feed Stroke into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * StrokeEvent = new event;
+                    Events.push_back(StrokeEvent);
+                    StrokeEvent->time = MyPointerToPerson->Stroke;
+                    StrokeEvent->p_fun = &EventMyStrokeDate;
+                    StrokeEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(StrokeEvent);
+                }
+            }
+            
+            ncd_nr++;
+        }
+    }
+    E(cout << endl << endl << "Hypercholesterolaemia has developed and addition risks evaluated!" << endl;)
+
     
 }
 
 void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
-    cout << " I have HT " << endl;
+    E(cout << "I just developed Hypercholesterol, lets see if I am at an increased risk of other NCDs!" << endl;)
+    
+    
+    
+    if (MyPointerToPerson->HT==0)
+    {
+        // First lets update Diabetes status to make sure any over-written dates don't run the same cod again
+        MyPointerToPerson->HT=1;
+        
+        
+        
+        // Some basic code and finding index for not getting NCDs
+        int ncd_nr=0;
+        double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+        
+        int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCDs, but we may use more, less in the future
+        int max_nr=1;
+        while (max_nr>NCDArray[0][0][max_index]){max_index++;}
+        
+        
+        
+        // Re-evaluate HC/HT and Renal
+        while (ncd_nr<nr_NCD_HT)
+        {
+            // Get a random number for each NCD
+            int i=0;
+            double r = ((double) rand() / (RAND_MAX));
+            while (r>(NCDArray[MyPointerToPerson->Sex-1][relatedNCDs_HT[ncd_nr]][i]*Risk_NCD_HT[ncd_nr]) && i<max_index){i++;}
+            
+            
+            // If we are getting an NCD lets get the age and date of NCD
+            if (i<max_index)
+            {
+                // Lets get the age and date they will have the NCD
+                double Age_NCD = RandomMinMax_2(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
+                double YearFraction=(RandomMinMax_2(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+                Age_NCD=Age_NCD+YearFraction;
+                Date_NCD=MyPointerToPerson->DoB+Age_NCD;
+            }
+            
+            
+            // Lets see if this pushed forward the existing NCD date
+            if (Date_NCD>=*p_GT && Date_NCD<MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HT[ncd_nr]))
+            {
+                
+                // Lets update the Date everywhere and add to queue
+                cout << "My old date is: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HT[ncd_nr]) << endl;
+                MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HT[ncd_nr])=Date_NCD;
+                cout << "My new date is: " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_HT[ncd_nr]) << endl;
+                
+                
+                
+                if (ncd_nr==0)
+                {
+                    MyPointerToPerson->MI=Date_NCD;
+                    
+                    //// --- Lets feed MI into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * MIEvent = new event;
+                    Events.push_back(MIEvent);
+                    MIEvent->time = MyPointerToPerson->MI;
+                    MIEvent->p_fun = &EventMyMIDate;
+                    MIEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(MIEvent);
+                }
+                
+                if (ncd_nr==1)
+                {
+                    MyPointerToPerson->CKD=Date_NCD;
+                    
+                    //// --- Lets feed CKD into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * CKDEvent = new event;
+                    Events.push_back(CKDEvent);
+                    CKDEvent->time = MyPointerToPerson->CKD;
+                    CKDEvent->p_fun = &EventMyCKDDate;
+                    CKDEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(CKDEvent);
+                }
+                
+                if (ncd_nr==2)
+                {
+                    MyPointerToPerson->Stroke=Date_NCD;
+                    
+                    //// --- Lets feed Stroke into the eventQ --- ////
+                    int p=MyPointerToPerson->PersonID-1;
+                    event * StrokeEvent = new event;
+                    Events.push_back(StrokeEvent);
+                    StrokeEvent->time = MyPointerToPerson->Stroke;
+                    StrokeEvent->p_fun = &EventMyStrokeDate;
+                    StrokeEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(StrokeEvent);
+                }
+            }
+            
+            ncd_nr++;
+        }
+    }
+    E(cout << endl << endl << "Hypercholesterolaemia has developed and addition risks evaluated!" << endl;)
 }
-//void EventMyMaligDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
-//void EventMyMIDate(person *MyPointerToPerson);              // Function executed when person develops hypertension
-//void EventMyOsteoDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
-//void EventMyCKDDate(person *MyPointerToPerson);             // Function executed when person develops hypertension
-//void EventMyStrokeDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
 
+void EventMyMaligDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed cancer!" << endl;)
+    MyPointerToPerson->Malig=1;
+}
+
+void EventMyMIDate(person *MyPointerToPerson)               // Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed MI!" << endl;)
+    MyPointerToPerson->MI=1;
+}
+    
+void EventMyOsteoDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed Osteo!" << endl;)
+    MyPointerToPerson->Osteo=1;
+}
+void EventMyCKDDate(person *MyPointerToPerson)              // Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed CKD!" << endl;)
+    MyPointerToPerson->CKD=1;
+}
+
+void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed Stroke!" << endl;)
+    MyPointerToPerson->Stroke=1;
+}
 
 
 

@@ -41,13 +41,21 @@ public:
     int ART;
     
     double Diabetes;
+    int Diabetes_status;
     double HC;
+    int HC_status;
     double HT;
+    int HT_status;
     double Malig;
+    int Malig_status;
     double MI;
+    int MI_status;
     double Osteo;
+    int Osteo_status;
     double CKD;
+    int CKD_status;
     double Stroke;
+    int Stroke_status;
     vector<double> NCD_DatesVector;
     
     

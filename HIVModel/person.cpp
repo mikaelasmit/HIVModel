@@ -89,6 +89,16 @@ person::person()											// First 'person' class second constructor/variable a
     Osteo=-999;
     CKD=-999;
     Stroke=-999;
+    
+    Diabetes_status=0;
+    HC_status=0;
+    HT_status=0;
+    Malig_status=0;
+    MI_status=0;
+    Osteo_status=0;
+    CKD_status=0;
+    Stroke_status=0;
+    
     NCD_DatesVector.resize(0);
     
 }
@@ -371,7 +381,7 @@ void person::GetMyDateNCD(){
     
     // Some basic code and finding index for not getting NCDs
     int ncd=0;                                                  // Assisgn all the possible NCDs in this code
-    double Date_NCD=1950.5;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+    double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
     
     int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCds, but we may use more, less in the future
     int max_nr=1;
@@ -387,9 +397,9 @@ void person::GetMyDateNCD(){
         while (r>NCDArray[Sex-1][ncd][i] && i<max_index){i++;}
         
         
-        //if (NCDArray[Sex-1][ncd][i]==1)                         // If they DO NOT get an NCD set date to -998
-        //{
-        /*    if      (ncd==0)    {Diabetes=Date_NCD;}
+        if (NCDArray[Sex-1][ncd][i]==1)                         // If they DO NOT get an NCD set date to -998
+        {
+            if      (ncd==0)    {Diabetes=Date_NCD;}
             else if (ncd==1)    {HC=Date_NCD;}
             else if (ncd==2)    {HT=Date_NCD;}
             else if (ncd==3)    {Malig=Date_NCD;}
@@ -397,17 +407,17 @@ void person::GetMyDateNCD(){
             else if (ncd==5)    {Osteo=Date_NCD;}
             else if (ncd==6)    {CKD=Date_NCD;}
             else if (ncd==7)    {Stroke=Date_NCD;}
-        //}
-         */
+        }
         
-        if (NCDArray[Sex-1][ncd][i]<2)                     // If they will get and NCD lets get the age and date
+        
+        if (NCDArray[Sex-1][ncd][i]<1)                          // If they will get and NCD lets get the age and date
         {
             
             // Lets get the age and date they will have the NCD
             double Age_NCD = RandomMinMax(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
             double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
             Age_NCD=Age_NCD+YearFraction;
-            //double Date_NCD=DoB+Age_NCD;
+            double Date_NCD=DoB+Age_NCD;
             
             
             if (ncd==0)
@@ -441,7 +451,6 @@ void person::GetMyDateNCD(){
                     HCEvent->person_ID = MyArrayOfPointersToPeople[p];
                     p_PQ->push(HCEvent);
                 }
-            
             }
     
             
@@ -461,19 +470,99 @@ void person::GetMyDateNCD(){
                 }
             }
             
+            else if (ncd==3)
+            {
+                Malig=Date_NCD;
+                
+                //// --- Lets feed Malignancies into the eventQ --- ////
+                if (Malig>=*p_GT && Malig<EndYear){
+                    int p=PersonID-1;
+                    event * MaligEvent = new event;
+                    Events.push_back(MaligEvent);
+                    MaligEvent->time = Malig;
+                    MaligEvent->p_fun = &EventMyMaligDate;
+                    MaligEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(MaligEvent);
+                }
+            }
+            
+            
+            else if (ncd==4)
+            {
+                MI=Date_NCD;
+                
+                //// --- Lets feed MI into the eventQ --- ////
+                if (MI>=*p_GT && MI<EndYear){
+                    int p=PersonID-1;
+                    event * MIEvent = new event;
+                    Events.push_back(MIEvent);
+                    MIEvent->time = MI;
+                    MIEvent->p_fun = &EventMyMIDate;
+                    MIEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(MIEvent);
+                }
+            }
+            
+            
+            else if (ncd==5)
+            {
+                Osteo=Date_NCD;
+                
+                //// --- Lets feed Osteo into the eventQ --- ////
+                if (Osteo>=*p_GT && Osteo<EndYear){
+                    int p=PersonID-1;
+                    event * OsteoEvent = new event;
+                    Events.push_back(OsteoEvent);
+                    OsteoEvent->time = Osteo;
+                    OsteoEvent->p_fun = &EventMyOsteoDate;
+                    OsteoEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(OsteoEvent);
+                }
+            }
+            
+            
+            else if (ncd==6)
+            {
+                CKD=Date_NCD;
+                
+                //// --- Lets feed CKD into the eventQ --- ////
+                if (CKD>=*p_GT && CKD<EndYear){
+                    int p=PersonID-1;
+                    event * CKDEvent = new event;
+                    Events.push_back(CKDEvent);
+                    CKDEvent->time = CKD;
+                    CKDEvent->p_fun = &EventMyCKDDate;
+                    CKDEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(CKDEvent);
+                }
+            }
+            
+            
+            else if (ncd==7)
+            {
+                Stroke=Date_NCD;
+                
+                //// --- Lets feed Stroke into the eventQ --- ////
+                if (Stroke>=*p_GT && Stroke<EndYear){
+                    int p=PersonID-1;
+                    event * StrokeEvent = new event;
+                    Events.push_back(StrokeEvent);
+                    StrokeEvent->time = Stroke;
+                    StrokeEvent->p_fun = &EventMyStrokeDate;
+                    StrokeEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(StrokeEvent);
+                }
+            }
+            
             
 
             
         }
        
         NCD_DatesVector.push_back(Date_NCD);
-        cout << NCD_DatesVector.at(ncd) << endl;
-        
         ncd++;                                                                      // Lets do the next NCD
     }
     
-    
-
     E(cout << "We finished assigning NCDs!" << endl;)
 }
 
